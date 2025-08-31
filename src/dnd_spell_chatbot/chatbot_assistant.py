@@ -124,7 +124,7 @@ class ChatbotAssistant:
         self.train_model(batch_size=8, lr=0.001, epochs=100)
         
         # Save to artifacts directory
-        project_root = Path(__file__).parent.parent.parent.parent
+        project_root = Path(__file__).parent.parent.parent
         artifacts_dir = project_root / "artifacts"
         artifacts_dir.mkdir(exist_ok=True)
         
@@ -139,7 +139,11 @@ class ChatbotAssistant:
         # rood dir is up 2 levels
         root_dir = Path(__file__).parent.parent.parent
         
-        with open(root_dir / "logs" / "exceptions.log", "a") as f:
+        # create logs folder if it doesn't exist
+        logs_dir = root_dir / "logs"
+        logs_dir.mkdir(exist_ok=True)
+
+        with open(logs_dir / "exceptions.log", "a") as f:
             f.write(f"Message: {input_message}, Predicted Tag: {predicted_tag}, Confidence: {confidence}\n")
 
     def process_message(self, input_message):
