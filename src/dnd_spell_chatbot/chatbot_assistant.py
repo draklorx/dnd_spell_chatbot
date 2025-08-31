@@ -2,13 +2,14 @@ import os
 import json
 import random
 
+from pathlib import Path
 import nltk
 import numpy as np
 import torch
 from torch import nn, optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
-from ChatbotModel import ChatbotModel
+from chatbot_model import ChatbotModel
 
 # Download if needed (NLTK is smart about not re-downloading)
 nltk.download('punkt_tab', quiet=True)
@@ -121,11 +122,24 @@ class ChatbotAssistant:
     def train_and_save(self):
         self.prepare_data()
         self.train_model(batch_size=8, lr=0.001, epochs=100)
-        self.save_model('chatbot_model.pth', 'dimensions.json')
+        
+        # Save to artifacts directory
+        project_root = Path(__file__).parent.parent.parent.parent
+        artifacts_dir = project_root / "artifacts"
+        artifacts_dir.mkdir(exist_ok=True)
+        
+        self.save_model(
+            artifacts_dir / 'chatbot_model.pth',
+            artifacts_dir / 'dimensions.json'
+        )
         print("Model retrained and saved.")
 
     def write_exception(self, input_message, predicted_tag, confidence):
-        with open("exceptions.log", "a") as f:
+        
+        # rood dir is up 2 levels
+        root_dir = Path(__file__).parent.parent.parent
+        
+        with open(root_dir / "logs" / "exceptions.log", "a") as f:
             f.write(f"Message: {input_message}, Predicted Tag: {predicted_tag}, Confidence: {confidence}\n")
 
     def process_message(self, input_message):
@@ -136,8 +150,8 @@ class ChatbotAssistant:
         self.model.eval()
         with torch.no_grad():
             logits = self.model(bag_tensor)
-            probabilities = F.softmax(logits, dim=1)  # Convert to probabilities
-            confidence = torch.max(probabilities).item()  # Get confidence score
+            probabilities = F.softmax(logits, dim=1)
+            confidence = torch.max(probabilities).item()
         
         predicted_class_index = torch.argmax(probabilities, dim=1).item()
         predicted_intent = self.intents[predicted_class_index]

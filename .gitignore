@@ -12,5 +12,6 @@ wheels/
 #IDE
 .vscode/
 
-# chatbot message exception log
-exceptions.log
+# project specific exclusions
+logs/
+artifacts/
