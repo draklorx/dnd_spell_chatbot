@@ -2,24 +2,24 @@ import os
 import json
 import random
 
-from pathlib import Path
 import nltk
 import numpy as np
 import torch
 from torch import nn, optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
-from chatbot_model import ChatbotModel
-from ner_interface import NerInterface
+from .chatbot_model import ChatbotModel
+from .ner_interface import NerInterface
 
 # Download if needed (NLTK is smart about not re-downloading)
 nltk.download('punkt_tab', quiet=True)
 nltk.download('wordnet', quiet=True)
 
-class ChatbotAssistant:
-    def __init__(self, intents_path, ner: NerInterface = None, function_mappings=None):
+class Assistant:
+    def __init__(self, intents_path, exceptions_path, ner: NerInterface = None, function_mappings=None):
         self.model = None
         self.intents_path: str = intents_path
+        self.exceptions_path: str = exceptions_path
         self.ner = ner
 
         # training data representing lemmatized patterns from intents.json and the tag they are associated with
@@ -122,31 +122,18 @@ class ChatbotAssistant:
         self.model = ChatbotModel(dimensions['input_size'], dimensions['output_size'])
         self.model.load_state_dict(torch.load(model_path, weights_only=True))
 
-    def train_and_save(self):
+    def train_and_save(self, model_path, dimensions_path):
         self.prepare_data()
         self.train_model(batch_size=8, lr=0.001, epochs=100)
         
-        # Save to artifacts directory
-        project_root = Path(__file__).parent.parent.parent
-        artifacts_dir = project_root / "artifacts"
-        artifacts_dir.mkdir(exist_ok=True)
-        
         self.save_model(
-            artifacts_dir / 'chatbot_model.pth',
-            artifacts_dir / 'dimensions.json'
+            model_path,
+            dimensions_path
         )
         print("Model retrained and saved.")
 
     def write_exception(self, input_message, predicted_tag, confidence):
-        
-        # rood dir is up 2 levels
-        root_dir = Path(__file__).parent.parent.parent
-        
-        # create logs folder if it doesn't exist
-        logs_dir = root_dir / "logs"
-        logs_dir.mkdir(exist_ok=True)
-
-        with open(logs_dir / "exceptions.log", "a") as f:
+        with open(self.exceptions_path, "a") as f:
             f.write(f"Message: {input_message}, Predicted Tag: {predicted_tag}, Confidence: {confidence}\n")
 
     def process_message(self, input_message):

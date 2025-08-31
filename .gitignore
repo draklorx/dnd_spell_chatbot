@@ -11,7 +11,3 @@ wheels/
 
 #IDE
 .vscode/
-
-# project specific exclusions
-logs/
-artifacts/

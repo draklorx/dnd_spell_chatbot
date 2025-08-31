@@ -1,6 +1,6 @@
 import json
 from fuzzywuzzy import fuzz
-from ner_interface import NerInterface
+from chatbot_core import NerInterface
 
 class SpellNer(NerInterface):
     def __init__(self, spells_data_path: str):
