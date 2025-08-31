@@ -14,8 +14,7 @@
         "Ah yes, I know that one well...",
         "That's a fascinating spell..."
       ],
-      "context_set": "",
-      "requires_ner": true
+      "context_set": ""
     },
     {
       "tag": "spell_level",
@@ -27,22 +26,21 @@
         "That spell is level {level}.",
         "{spell_name} is a {level} level spell."
       ],
-      "context_set": "",
-      "requires_ner": true
+      "context_set": ""
     },
     {
       "tag": "spell_damage",
       "patterns": [
         "How much damage does {spell_name} do?",
         "What's the damage for {spell_name}?",
-        "Does {spell_name} do a lot of damage?"
+        "Does {spell_name} do a lot of damage?",
+        "How much damage does it do?"
       ],
       "responses": [
         "{spell_name} deals {damage_dice} {damage_type} damage.",
         "The damage is {damage_dice} {damage_type}."
       ],
-      "context_set": "",
-      "requires_ner": true
+      "context_set": ""
     }
   ]
 }

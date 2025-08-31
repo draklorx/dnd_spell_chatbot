@@ -160,8 +160,8 @@ class Assistant:
         if self.ner and self.ner.intent_requires_ner(predicted_intent):
             entities = self.ner.extract_entities(input_message)
             
-            if not entities:
-                return "I couldn't find that spell in my grimoire. Could you check the spelling?"
+            if entities["confidence"] < 80:
+                return f"I couldn't find that spell in my grimoire. Did you mean {entities['spell_name']}?"
 
         # Handle function mappings
         if self.function_mappings and predicted_intent in self.function_mappings:
