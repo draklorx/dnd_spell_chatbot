@@ -1,19 +1,16 @@
 import random
 from pathlib import Path
 from chatbot_assistant import ChatbotAssistant
-
-def end_conversation(assistant):
-    print(random.choice(assistant.intents_responses["farewell"]))
-    exit()
+from spell_ner import SpellNer
 
 if __name__ == "__main__":
     # Get paths relative to this file's location
     current_dir = Path(__file__).parent
     project_root = current_dir.parent.parent
-    
+    spell_ner = SpellNer(current_dir / 'data' / 'spells.json') if current_dir / 'data' / 'spells.json' else None
     assistant = ChatbotAssistant(
         current_dir / 'data' / 'intents.json',
-        function_mappings={"farewell": lambda: end_conversation(assistant)}
+        ner=spell_ner
     )
     assistant.parse_intents()
 
@@ -25,11 +22,17 @@ if __name__ == "__main__":
     except FileNotFoundError:
         assistant.train_and_save()
 
+    print("Welcome to the DnD Spell Chatbot!")
+    print("Type '/retrain' to retrain the model or '/quit' to exit.")
+
     while True:
         message = input('You:')
 
         if message == "/retrain":
             assistant.train_and_save()
             continue
+
+        if message == "/quit":
+            exit()
 
         print(assistant.process_message(message))

@@ -1,82 +1,48 @@
 {
   "intents": [
     {
-      "tag": "greeting",
-      "patterns": ["Hello", "Hi there", "Greetings", "Good evening", "Hey"],
-      "responses": [
-        "Well met, traveler! Welcome to the Drunken Dragon Inn.",
-        "Ah, a new face! Pull up a chair and rest your weary feet.",
-        "Greetings, adventurer. What brings you to my humble tavern?"
-      ],
-      "context_set": ""
-    },
-    {
-      "tag": "ask_drink",
+      "tag": "spell_info",
       "patterns": [
-        "What do you have to drink?",
-        "I'd like a drink",
-        "Ale please",
-        "Got any wine?",
-        "What's on tap?",
-        "Can I get a beer?"
+        "Tell me about {spell_name}",
+        "What does {spell_name} do?",
+        "How does {spell_name} work?",
+        "Describe {spell_name}",
+        "What is {spell_name}?"
       ],
       "responses": [
-        "We've got the finest dwarven ale, elven wine, and a mysterious brew I wouldn't recommend after midnight.",
-        "A pint of dwarven stout or a glass of elven mead, the choice is yours!",
-        "For the brave, I've got a flaming dragon whiskey - care to try?"
-      ],
-      "context_set": ""
-    },
-    {
-      "tag": "ask_food",
-      "patterns": [
-        "What have you got to eat?",
-        "What food do you serve?",
-        "I'd like some food",
-        "Got any meals?",
-        "What's for dinner?",
-        "I'm hungry"
-      ],
-      "responses": [
-        "We've roasted boar, stew thick enough to stand a spoon in, and bread fresh from the ovens.",
-        "You'll find no finer mutton stew this side of the mountains.",
-        "Hungry, eh? A platter of cheese and bread will keep you strong for your travels."
-      ],
-      "context_set": ""
-    },
-    {
-      "tag": "ask_gossip",
-      "patterns": [
-        "Heard any rumors?",
-        "What's the news?",
-        "Any gossip?",
-        "What's happening around here?",
-        "Tell me a story"
-      ],
-      "responses": [
-        "They say a dragon was spotted near the old ruins to the north... though I don't fancy seeing it myself.",
-        "Rumor has it the king's treasury has gone missing - and the thieves are hiding in plain sight.",
-        "Some say the forest spirits are restless again. Might be trouble for travelers."
-      ],
-      "context_set": ""
-    },
-    {
-      "tag": "farewell",
-      "patterns": [
-        "Bye",
-        "Goodbye",
-        "Farewell",
-        "I must be going",
-        "See you later",
-        "Thanks for the hospitality"
-      ],
-      "responses": [
-        "Safe travels, adventurer. May fortune favor you.",
-        "Until next time, traveler. The fire will be waiting for your return.",
-        "Go with the gods, and may your mug never run dry."
+        "Let me tell you about that spell...",
+        "Ah yes, I know that one well...",
+        "That's a fascinating spell..."
       ],
       "context_set": "",
-      "function": "end_conversation"
+      "requires_ner": true
+    },
+    {
+      "tag": "spell_level",
+      "patterns": [
+        "What level is {spell_name}?",
+        "What spell level is {spell_name}?"
+      ],
+      "responses": [
+        "That spell is level {level}.",
+        "{spell_name} is a {level} level spell."
+      ],
+      "context_set": "",
+      "requires_ner": true
+    },
+    {
+      "tag": "spell_damage",
+      "patterns": [
+        "How much damage does {spell_name} do?",
+        "What's the damage for {spell_name}?",
+        "Does {spell_name} do a lot of damage?"
+      ],
+      "responses": [
+        "{spell_name} deals {damage_dice} {damage_type} damage.",
+        "The damage is {damage_dice} {damage_type}."
+      ],
+      "context_set": "",
+      "requires_ner": true
     }
   ]
 }
