@@ -1,0 +1,11 @@
+[project]
+name = "dnd-spell-chatbot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "nltk>=3.9.1",
+    "numpy>=2.3.2",
+    "torch>=2.8.0",
+]
