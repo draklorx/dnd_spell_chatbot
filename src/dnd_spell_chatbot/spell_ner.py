@@ -1,5 +1,4 @@
 import json
-import re
 from fuzzywuzzy import fuzz
 from chatbot_core import NerInterface
 

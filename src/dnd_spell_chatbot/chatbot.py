@@ -22,12 +22,6 @@ class Chatbot(ChatbotInterface):
             self.intents_path,
             self.exceptions_path
         )
-        self.assistant.parse_intents()
-
-        try:
-            self.assistant.load_model(self.model_path, self.dimensions_path)
-        except FileNotFoundError:
-            self.assistant.train_and_save(self.model_path, self.dimensions_path)
 
     @staticmethod
     def substitute_spell_data(response: str, entities: dict) -> str:
@@ -36,8 +30,8 @@ class Chatbot(ChatbotInterface):
         placeholders = re.findall(r'\{(\w+)\}', response)
         
         for key in placeholders:
-            value = ""
             if key in entities["spell_data"]:
+                value = entities["spell_data"][key]
                 # Handle special cases
                 if key == "components":
                     value = ", ".join(value)
@@ -45,16 +39,22 @@ class Chatbot(ChatbotInterface):
                     value += f" ({material})" if material else ''
                 elif isinstance(value, list):
                     value = ", ".join(value)
-                else:
-                    value = entities["spell_data"][key]
             elif key == "casting_time":
                 casting_time = entities["spell_data"].get("castingTime", "")
                 value = casting_time if casting_time else entities["spell_data"].get("actionType", "")
+            else:
+                raise ValueError(f"Unknown placeholder '{key}' in response.")
 
             response = response.replace(f"{{{key}}}", str(value))
                 
         return response
     
+    def train(self):
+        self.assistant.train_and_save(self.model_path, self.dimensions_path)
+    
+    def load(self):
+        self.assistant.load_model(self.model_path, self.dimensions_path)
+
     def run(self):
         print("Welcome to the DnD Spell Chatbot!")
         print("Type '/retrain' to retrain the model or '/quit' to exit.")
@@ -63,7 +63,7 @@ class Chatbot(ChatbotInterface):
             message = input('You:')
 
             if message == "/retrain":
-                self.assistant.train_and_save(self.model_path, self.dimensions_path)
+                self.train()
                 continue
 
             if message == "/quit":
@@ -76,9 +76,12 @@ class Chatbot(ChatbotInterface):
             if self.ner.intent_requires_ner(predicted_intent):
                 entities = self.ner.extract_entities(message)
                 
-                if entities["confidence"] < 80:
-                    return f"I couldn't find that spell in my grimoire. Did you mean {entities['spell_name']}?"
-                response = self.substitute_spell_data(response, entities)
+                if entities["confidence"] < 65:
+                    response = f"That spell does not exist in my grimoire. I'm limited to SRD data. If your spell is not in the SRD, I won't be able to help."
+                elif entities["confidence"] < 80:
+                    response = f"I couldn't find that spell in my grimoire. Did you mean {entities['spell_name']}?"
+                else:
+                    response = self.substitute_spell_data(response, entities)
 
             print(response)
             

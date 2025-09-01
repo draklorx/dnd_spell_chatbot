@@ -18,7 +18,8 @@
       "patterns": [
         "What level is {name}?",
         "What spell level is {name}?",
-        "What is {spell} level?"
+        "What is its level?",
+        "and its level?"
       ],
       "responses": [
         "{name} is level {level}.",
@@ -30,7 +31,8 @@
       "patterns": [
         "What school is {name}?",
         "What spell school is {name}?",
-        "What is {name} school?"
+        "What is its school?",
+        "and its school?"
       ],
       "responses": [
         "{name} is a {school} spell.",
@@ -42,8 +44,9 @@
       "patterns": [
         "What is the casting time of {name}?",
         "How long does it take to cast {name}?",
-        "What is {name} casting time?",
-        "How long does {name} take to cast?"
+        "What is its casting time?",
+        "How long does {name} take to cast?",
+        "and its casting time?"
       ],
       "responses": [
         "{name} has a casting time of {casting_time}.",
@@ -55,7 +58,9 @@
       "patterns": [
         "What is the range of {name}?",
         "How far can {name} reach?",
-        "What is {name} range?"
+        "What is {name} range?",
+        "What's its range?",
+        "and its range?"
       ],
       "responses": [
         "{name} has a range of {range}.",
@@ -67,7 +72,8 @@
       "patterns": [
         "What are the components of {name}?",
         "What spell components does {name} require?",
-        "What are {name} components?"
+        "What are {name} components?",
+        "and its components?"
       ],
       "responses": [
         "{name} requires: {components}.",
@@ -80,7 +86,9 @@
         "What is the duration of {name}?",
         "How long does {name} last?",
         "What is {name} duration?",
-        "How long does {name} last?"
+        "How long does {name} last?",
+        "What's its duration?",
+        "and its duration?"
       ],
       "responses": [
         "{name} lasts for: {duration}.",
@@ -92,7 +100,8 @@
       "patterns": [
         "What classes can cast {name}?",
         "Which classes have access to {name}?",
-        "Who can cast {name}?"
+        "Who can cast {name}?",
+        "and its classes?"
       ],
       "responses": [
         "{name} can be cast by: {classes}.",

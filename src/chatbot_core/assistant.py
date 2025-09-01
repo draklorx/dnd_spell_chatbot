@@ -115,6 +115,7 @@ class Assistant:
             json.dump({ 'input_size': self.X.shape[1], 'output_size': len(self.intents) }, f)
 
     def load_model(self, model_path, dimensions_path):
+        self.parse_intents()
         with open(dimensions_path, 'r') as f:
             dimensions = json.load(f)
 
@@ -122,6 +123,7 @@ class Assistant:
         self.model.load_state_dict(torch.load(model_path, weights_only=True))
 
     def train_and_save(self, model_path, dimensions_path):
+        self.parse_intents()
         self.prepare_data()
         self.train_model(batch_size=8, lr=0.001, epochs=100)
         
