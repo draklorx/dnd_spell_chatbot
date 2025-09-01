@@ -9,18 +9,16 @@ from torch import nn, optim
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
 from .chatbot_model import ChatbotModel
-from .ner_interface import NerInterface
 
 # Download if needed (NLTK is smart about not re-downloading)
 nltk.download('punkt_tab', quiet=True)
 nltk.download('wordnet', quiet=True)
 
 class Assistant:
-    def __init__(self, intents_path, exceptions_path, ner: NerInterface = None, function_mappings=None):
+    def __init__(self, intents_path, exceptions_path, function_mappings=None):
         self.model = None
         self.intents_path: str = intents_path
         self.exceptions_path: str = exceptions_path
-        self.ner = ner
 
         # training data representing lemmatized patterns from intents.json and the tag they are associated with
         self.documents: list[tuple[list[str], str]] = []
@@ -40,10 +38,11 @@ class Assistant:
     @staticmethod
     def tokenize_and_lemmatize(text):
         lemmatizer = nltk.WordNetLemmatizer()
-
+        
         words = nltk.word_tokenize(text)
-        words = [lemmatizer.lemmatize(word.lower()) for word in words]
-
+        # Keep and lemmatize words that contain at least one alphanumeric character
+        words = [lemmatizer.lemmatize(word.lower()) for word in words if any(c.isalnum() for c in word)]
+        
         return words
 
     def bag_of_words(self, words):
@@ -136,7 +135,7 @@ class Assistant:
         with open(self.exceptions_path, "a") as f:
             f.write(f"Message: {input_message}, Predicted Tag: {predicted_tag}, Confidence: {confidence}\n")
 
-    def process_message(self, input_message):
+    def process_message(self, input_message) -> tuple[str | None, str]:
         words = self.tokenize_and_lemmatize(input_message)
         bag = self.bag_of_words(words)
 
@@ -153,23 +152,10 @@ class Assistant:
         # Only respond if confidence is high enough
         if confidence < 0.7:
             self.write_exception(input_message, predicted_intent, confidence)
-            return "I'm not sure what you mean. Can you rephrase?"
-
-        # Extract spell entities if this intent requires NER
-        entities = {}
-        if self.ner and self.ner.intent_requires_ner(predicted_intent):
-            entities = self.ner.extract_entities(input_message)
-            
-            if entities["confidence"] < 80:
-                return f"I couldn't find that spell in my grimoire. Did you mean {entities['spell_name']}?"
-
-        # Handle function mappings
-        if self.function_mappings and predicted_intent in self.function_mappings:
-            self.function_mappings[predicted_intent]()
+            return (None, "I'm not sure what you mean. Can you rephrase?")
 
         # Generate response with entity substitution
         if self.intents_responses[predicted_intent]:
-            response = random.choice(self.intents_responses[predicted_intent])
-            return self.ner.substitute_entities(response, entities)
+            return (predicted_intent, random.choice(self.intents_responses[predicted_intent]))
 
-        return "I'm not sure how to respond to that."
+        return (None, "I'm not sure how to respond to that.")

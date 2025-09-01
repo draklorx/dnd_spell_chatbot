@@ -1,46 +1,103 @@
 {
   "intents": [
     {
-      "tag": "spell_info",
+      "tag": "info",
       "patterns": [
-        "Tell me about {spell_name}",
-        "What does {spell_name} do?",
-        "How does {spell_name} work?",
-        "Describe {spell_name}",
-        "What is {spell_name}?"
+        "Tell me about {name}",
+        "What does {name} do?",
+        "How does {name} work?",
+        "Describe {name}",
+        "What is {name}?"
       ],
       "responses": [
-        "Let me tell you about that spell...",
-        "Ah yes, I know that one well...",
-        "That's a fascinating spell..."
-      ],
-      "context_set": ""
+        "{name}\nLevel {level} {school}\nCasting Time: {casting_time}\nRange: {range}\nComponents: {components}\nDuration: {duration}\nClasses: {classes}\nDescription: {description}"
+      ]
     },
     {
-      "tag": "spell_level",
+      "tag": "level",
       "patterns": [
-        "What level is {spell_name}?",
-        "What spell level is {spell_name}?"
+        "What level is {name}?",
+        "What spell level is {name}?",
+        "What is {spell} level?"
       ],
       "responses": [
-        "That spell is level {level}.",
-        "{spell_name} is a {level} level spell."
-      ],
-      "context_set": ""
+        "{name} is level {level}.",
+        "{name} is a level {level} spell."
+      ]
     },
     {
-      "tag": "spell_damage",
+      "tag": "school",
       "patterns": [
-        "How much damage does {spell_name} do?",
-        "What's the damage for {spell_name}?",
-        "Does {spell_name} do a lot of damage?",
-        "How much damage does it do?"
+        "What school is {name}?",
+        "What spell school is {name}?",
+        "What is {name} school?"
       ],
       "responses": [
-        "{spell_name} deals {damage_dice} {damage_type} damage.",
-        "The damage is {damage_dice} {damage_type}."
+        "{name} is a {school} spell.",
+        "{name} belongs to the {school} school of magic."
+      ]
+    },
+    {
+      "tag": "casting_time",
+      "patterns": [
+        "What is the casting time of {name}?",
+        "How long does it take to cast {name}?",
+        "What is {name} casting time?",
+        "How long does {name} take to cast?"
       ],
-      "context_set": ""
+      "responses": [
+        "{name} has a casting time of {casting_time}.",
+        "The casting time for {name} is {casting_time}."
+      ]
+    },
+    {
+      "tag": "range",
+      "patterns": [
+        "What is the range of {name}?",
+        "How far can {name} reach?",
+        "What is {name} range?"
+      ],
+      "responses": [
+        "{name} has a range of {range}.",
+        "The range for {name} is {range}."
+      ]
+    },
+    {
+      "tag": "components",
+      "patterns": [
+        "What are the components of {name}?",
+        "What spell components does {name} require?",
+        "What are {name} components?"
+      ],
+      "responses": [
+        "{name} requires: {components}.",
+        "To cast {name}, it requires: {components}."
+      ]
+    },
+    {
+      "tag": "duration",
+      "patterns": [
+        "What is the duration of {name}?",
+        "How long does {name} last?",
+        "What is {name} duration?",
+        "How long does {name} last?"
+      ],
+      "responses": [
+        "{name} lasts for: {duration}.",
+        "The duration of {name} is {duration}."
+      ]
+    },
+    {
+      "tag": "classes",
+      "patterns": [
+        "What classes can cast {name}?",
+        "Which classes have access to {name}?",
+        "Who can cast {name}?"
+      ],
+      "responses": [
+        "{name} can be cast by: {classes}.",
+        "The following classes have access to {name}: {classes}."
+      ]
     }
   ]
 }

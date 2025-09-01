@@ -18,8 +18,3 @@ class NerInterface(ABC):
     def intent_requires_ner(self, intent: str) -> bool:
         """Check if an intent requires NER processing"""
         pass
-
-    @abstractmethod
-    def substitute_entities(self, response: str, entities: dict[str, str]) -> str:
-        """Substitute entity placeholders in response templates"""
-        pass
