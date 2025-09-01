@@ -29,7 +29,7 @@ dnd_spell_chatbot/
 │       ├── spell_ner.py              # Spell name entity recognition
 │       ├── artifacts/                # Generated model files
 │       │   ├── chatbot_model.pth     # Trained PyTorch model (generated)
-│       │   └── dimensions.json       # Model dimensions data (generated)
+│       │   └── model_data.json       # Saved model data so we don't have to rebuild it (generated)
 │       ├── data/                     # Training and reference data
 │       │   ├── intents.json          # Training data with patterns and responses
 │       │   └── spells.json           # D&D spell information database

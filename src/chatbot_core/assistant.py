@@ -108,28 +108,38 @@ class Assistant:
 
             print(f"Epoch {epoch+1}: Loss: {running_loss / len(loader):.4f}")
 
-    def save_model(self, model_path, dimensions_path):
+    def save_model(self, model_path, model_data_path):
         torch.save(self.model.state_dict(), model_path)
 
-        with open(dimensions_path, 'w') as f:
-            json.dump({ 'input_size': self.X.shape[1], 'output_size': len(self.intents) }, f)
+        with open(model_data_path, 'w') as f:
+            json.dump({
+                'input_size': self.X.shape[1],
+                'output_size': len(self.intents),
+                'intents': self.intents,
+                'intents_responses': self.intents_responses,
+                'vocabulary': self.vocabulary
+            }, f)
 
-    def load_model(self, model_path, dimensions_path):
-        self.parse_intents()
-        with open(dimensions_path, 'r') as f:
-            dimensions = json.load(f)
-
-        self.model = ChatbotModel(dimensions['input_size'], dimensions['output_size'])
+    def load_model(self, model_path, model_data_path):
+        with open(model_data_path, 'r') as f:
+            data = json.load(f)
+        
+        # Load all necessary data from the saved file
+        self.intents = data['intents']
+        self.intents_responses = data['intents_responses'] 
+        self.vocabulary = data['vocabulary']
+        
+        self.model = ChatbotModel(data['input_size'], data['output_size'])
         self.model.load_state_dict(torch.load(model_path, weights_only=True))
 
-    def train_and_save(self, model_path, dimensions_path):
+    def train_and_save(self, model_path, model_data_path):
         self.parse_intents()
         self.prepare_data()
         self.train_model(batch_size=8, lr=0.001, epochs=100)
         
         self.save_model(
             model_path,
-            dimensions_path
+            model_data_path
         )
         print("Model retrained and saved.")
 

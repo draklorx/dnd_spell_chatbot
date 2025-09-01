@@ -1,10 +1,10 @@
 import os
 from dnd_spell_chatbot.chatbot import Chatbot
 
-def intents_updated(model_path, dimensions_path, intents_path) -> bool:
+def intents_updated(model_path, model_data_path, intents_path) -> bool:
     """Check if the intents file has been modified since the model was last trained"""
     # If model doesn't exist, it needs to be trained
-    if not model_path.exists() or not dimensions_path.exists():
+    if not model_path.exists() or not model_data_path.exists():
         return True
         
     # Compare modification timestamps
@@ -17,7 +17,7 @@ def intents_updated(model_path, dimensions_path, intents_path) -> bool:
 if __name__ == "__main__":
     try:
         chatbot = Chatbot()
-        if intents_updated(chatbot.model_path, chatbot.dimensions_path, chatbot.intents_path):
+        if intents_updated(chatbot.model_path, chatbot.model_data_path, chatbot.intents_path):
             chatbot.train()
         else:
             chatbot.load()

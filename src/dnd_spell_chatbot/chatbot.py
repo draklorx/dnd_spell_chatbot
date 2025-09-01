@@ -12,7 +12,7 @@ class Chatbot(ChatbotInterface):
         self.intents_path = current_dir / 'data' / 'intents.json'
         self.spells_path = current_dir / 'data' / 'spells.json'
         self.model_path = artifacts_dir / 'chatbot_model.pth'
-        self.dimensions_path = artifacts_dir / 'dimensions.json'
+        self.model_data_path = artifacts_dir / 'model_data.json'
         self.exceptions_path = current_dir / 'logs' / 'exceptions.log'
         self.function_mappings = {}
 
@@ -50,10 +50,10 @@ class Chatbot(ChatbotInterface):
         return response
     
     def train(self):
-        self.assistant.train_and_save(self.model_path, self.dimensions_path)
-    
+        self.assistant.train_and_save(self.model_path, self.model_data_path)
+
     def load(self):
-        self.assistant.load_model(self.model_path, self.dimensions_path)
+        self.assistant.load_model(self.model_path, self.model_data_path)
 
     def run(self):
         print("Welcome to the DnD Spell Chatbot!")
