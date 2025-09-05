@@ -7,10 +7,11 @@
         "What does {name} do?",
         "How does {name} work?",
         "Describe {name}",
-        "What is {name}?"
+        "What is {name}?",
+        "What's it do?"
       ],
       "responses": [
-        "{name}\nLevel {level} {school}\nCasting Time: {casting_time}\nRange: {range}\nComponents: {components}\nDuration: {duration}\nClasses: {classes}\nDescription: {description}"
+        "{name}\nLevel {level} {school}\nCasting Time: {casting_time}\nRange: {range}\nComponents: {components}\nDuration: {duration}\nClasses: {classes}\nDescription: {description}\nHigher Levels: {higherLevelSlot}"
       ]
     },
     {

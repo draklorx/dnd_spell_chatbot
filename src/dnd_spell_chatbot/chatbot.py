@@ -49,10 +49,10 @@ class Chatbot(ChatbotInterface):
         print("Loading model...")
         print(self.model_path)
         print(self.model_data_path)
-        model = ModelData.load_model(self.model_path, self.model_data_path)
+        model_data = ModelData.load_model(self.model_path, self.model_data_path)
 
         self.assistant = Assistant(
-            model,
+            model_data,
             self.exceptions_path
         )
 
@@ -61,7 +61,7 @@ class Chatbot(ChatbotInterface):
         trainer.train_and_save(self.model_path, self.model_data_path, self.intents_path)
 
         self.assistant = Assistant(
-            trainer.model,
+            trainer.model_data,
             self.exceptions_path
         )
 

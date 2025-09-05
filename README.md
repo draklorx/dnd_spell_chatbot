@@ -19,10 +19,13 @@ dnd_spell_chatbot/
 │   ├── main.py                       # Main application entry point
 │   ├── chatbot_core/                 # Core chatbot framework
 │   │   ├── __init__.py
-│   │   ├── assistant.py              # Core NLP processing and model management
+│   │   ├── assistant.py              # Handles processing user messages and exceptions
 │   │   ├── chatbot_interface.py      # Interface definition for chatbots
-│   │   ├── chatbot_model.py          # Neural network model definition
-│   │   └── ner_interface.py          # Interface for named entity recognition
+│   │   ├── data_preprocessor.py      # Text preprocessing utilities
+│   │   ├── intent_classifier.py      # Intent classification logic
+│   │   ├── model_data.py             # Model data management
+│   │   ├── ner_interface.py          # Interface for named entity recognition
+│   │   └── trainer.py                # Model training functionality
 │   └── dnd_spell_chatbot/            # D&D specific implementation
 │       ├── __init__.py
 │       ├── chatbot.py                # D&D specific chatbot implementation
