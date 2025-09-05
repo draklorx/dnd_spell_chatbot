@@ -20,6 +20,7 @@ if __name__ == "__main__":
         if intents_updated(chatbot.model_path, chatbot.model_data_path, chatbot.intents_path):
             chatbot.train()
         else:
+            print("Loading existing model...")
             chatbot.load()
     except Exception as e:
         print(f"Error occurred during initialization: {e}")

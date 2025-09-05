@@ -1,8 +1,8 @@
 from torch import nn
 
-class ChatbotModel(nn.Module):
+class IntentClassifier(nn.Module):
     def __init__(self, input_size, output_size):
-        super(ChatbotModel, self).__init__()
+        super(IntentClassifier, self).__init__()
 
         self.fc1 = nn.Linear(input_size, 128)
         self.fc2 = nn.Linear(128, 64)

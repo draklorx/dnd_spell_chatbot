@@ -1,5 +1,5 @@
 from pathlib import Path
-from chatbot_core import Assistant, ChatbotInterface
+from chatbot_core import Assistant, ChatbotInterface, ModelData, Trainer
 from .spell_ner import SpellNer
 import re
 
@@ -18,10 +18,6 @@ class Chatbot(ChatbotInterface):
 
         self.ner = SpellNer(self.spells_path)
 
-        self.assistant = Assistant(
-            self.intents_path,
-            self.exceptions_path
-        )
 
     @staticmethod
     def substitute_spell_data(response: str, entities: dict) -> str:
@@ -49,11 +45,25 @@ class Chatbot(ChatbotInterface):
                 
         return response
     
-    def train(self):
-        self.assistant.train_and_save(self.model_path, self.model_data_path)
-
     def load(self):
-        self.assistant.load_model(self.model_path, self.model_data_path)
+        print("Loading model...")
+        print(self.model_path)
+        print(self.model_data_path)
+        model = ModelData.load_model(self.model_path, self.model_data_path)
+
+        self.assistant = Assistant(
+            model,
+            self.exceptions_path
+        )
+
+    def train(self):
+        trainer = Trainer(self.intents_path)
+        trainer.train_and_save(self.model_path, self.model_data_path, self.intents_path)
+
+        self.assistant = Assistant(
+            trainer.model,
+            self.exceptions_path
+        )
 
     def run(self):
         print("Welcome to the DnD Spell Chatbot!")
