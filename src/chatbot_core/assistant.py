@@ -2,7 +2,7 @@ import random
 
 import torch
 import torch.nn.functional as F
-from .data_preprocessor import DataPreprocessor
+from .utils.data_preprocessor import DataPreprocessor
 
 class Assistant:
     def __init__(self, model, exceptions_path):

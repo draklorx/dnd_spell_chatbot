@@ -1,5 +1,7 @@
 from pathlib import Path
-from chatbot_core import Assistant, ChatbotInterface, ModelData, Trainer
+from chatbot_core import Assistant, Trainer
+from chatbot_core.models import ModelData
+from chatbot_core.interfaces import ChatbotInterface
 from .spell_ner import SpellNer
 import re
 

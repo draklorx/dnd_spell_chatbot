@@ -3,7 +3,7 @@ import json
 import numpy as np
 import torch
 from .intent_classifier import IntentClassifier
-from .data_preprocessor import DataPreprocessor
+from ..utils.data_preprocessor import DataPreprocessor
 
 class ModelData:
     def __init__(self):

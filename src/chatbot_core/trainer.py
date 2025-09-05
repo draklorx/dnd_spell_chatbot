@@ -1,8 +1,8 @@
 import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader, TensorDataset
-from .intent_classifier import IntentClassifier
-from .model_data import ModelData
+from .models.intent_classifier import IntentClassifier
+from .models.model_data import ModelData
 
 class Trainer:
     def __init__(self, intents_path):
