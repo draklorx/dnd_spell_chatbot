@@ -8,6 +8,7 @@ from nltk.tokenize import sent_tokenize
 import re
 from rapidfuzz import fuzz, process
 from pathlib import Path
+import math
 
 # Download required NLTK data
 try:
@@ -59,10 +60,21 @@ class SpellEmbedder:
             )
         ''')
         
-        # Create vector table for embeddings
+        # Add a chunks table to handle multiple embeddings per sentence
+        self.conn.execute('''
+            CREATE TABLE IF NOT EXISTS sentence_chunks (
+                id INTEGER PRIMARY KEY,
+                sentence_id INTEGER,
+                chunk_text TEXT NOT NULL,
+                chunk_order INTEGER NOT NULL,
+                FOREIGN KEY (sentence_id) REFERENCES spell_sentences (id)
+            )
+        ''')
+        
+        # Create vector table for chunk embeddings
         self.conn.execute(f'''
             CREATE VIRTUAL TABLE IF NOT EXISTS sentence_embeddings USING vec0(
-                sentence_id INTEGER PRIMARY KEY,
+                chunk_id INTEGER PRIMARY KEY,
                 embedding FLOAT[{self.embedding_dim}]
             )
         ''')
@@ -84,15 +96,50 @@ class SpellEmbedder:
         
         # Split into sentences
         sentences = sent_tokenize(text)
+
+        return [sentence.strip() for sentence in sentences]
+
+    def _chunk_sentence(self, sentence, sentence_idx, target_chunk_size=10):
+        """
+        Break a sentence into smaller chunks while preserving meaning.
         
-        # Clean up sentences
-        cleaned_sentences = []
-        for sentence in sentences:
-            sentence = sentence.strip()
-            if len(sentence) > 10:  # Filter out very short sentences
-                cleaned_sentences.append(sentence)
+        Args:
+            sentence: The sentence to chunk
+            sentence_idx: Original sentence index
+            target_words: Target number of words per chunk
+            max_words: Maximum words before forcing a split
         
-        return cleaned_sentences
+        Returns:
+            List of tuples (chunk_text, original_sentence_idx, chunk_idx)
+        """
+        if target_chunk_size <= 4:
+            raise ValueError("Target chunk size must be greater than 4.")
+        
+        words = sentence.split()
+        min_overlap = math.ceil(target_chunk_size * 0.15)
+
+        # If sentence is short enough, return as single chunk
+        if len(words) <= target_chunk_size:
+            return [(sentence, sentence_idx, 0)]
+
+        # Determine number of chunks that still meets minimum overlap requirements
+        num_chunks = math.ceil((len(words) - min_overlap) / (target_chunk_size - min_overlap))
+
+        chunks = []
+        # Evenly distribute chunks over the words
+        for chunk_idx in range(num_chunks):
+            if chunk_idx == 0:
+                chunk_text = ' '.join(words[0:target_chunk_size])
+                chunks.append((chunk_text, sentence_idx, chunk_idx))
+            elif chunk_idx == num_chunks - 1:
+                chunk_text = ' '.join(words[-target_chunk_size:])
+                chunks.append((chunk_text, sentence_idx, chunk_idx))
+            else:
+                chunk_center = (len(words) // (num_chunks -1)) * (chunk_idx)
+                chunk_text = ' '.join(words[chunk_center - target_chunk_size//2 : chunk_center + target_chunk_size//2])
+                chunks.append((chunk_text, sentence_idx, chunk_idx))
+
+        return chunks
     
     def process_spells(self, spells_data):
         """Process spells data and create embeddings."""
@@ -130,26 +177,38 @@ class SpellEmbedder:
         return spell_names
     
     def _process_text_field(self, spell_id, text, field_name):
-        """Process a text field for a spell."""
+        """Process a text field for a spell with chunking."""
         sentences = self.clean_and_split_text(text)
-        
-        for order, sentence in enumerate(sentences):
+
+        for sentence_idx, sentence in enumerate(sentences):
             # Insert sentence
             cursor = self.conn.execute('''
                 INSERT INTO spell_sentences (spell_id, sentence_text, sentence_order, source_field)
                 VALUES (?, ?, ?, ?)
-            ''', (spell_id, sentence, order, field_name))
+            ''', (spell_id, sentence, sentence_idx, field_name))
             
             sentence_id = cursor.lastrowid
             
-            # Create embedding
-            embedding = self.model.encode(sentence)
-            
-            # Insert embedding
-            self.conn.execute('''
-                INSERT INTO sentence_embeddings (sentence_id, embedding)
-                VALUES (?, ?)
-            ''', (sentence_id, embedding.tobytes()))
+            # Create chunks and embeddings
+            chunks = self._chunk_sentence(sentence, sentence_idx)
+
+            for chunk_idx, (chunk_text, original_sentence_idx, chunk_order) in enumerate(chunks):
+                # Insert chunk
+                chunk_cursor = self.conn.execute('''
+                    INSERT INTO sentence_chunks (sentence_id, chunk_text, chunk_order)
+                    VALUES (?, ?, ?)
+                ''', (sentence_id, chunk_text, chunk_idx))
+                
+                chunk_id = chunk_cursor.lastrowid
+                
+                # Create embedding for this chunk
+                embedding = self.model.encode(chunk_text)
+                
+                # Insert embedding
+                self.conn.execute('''
+                    INSERT INTO sentence_embeddings (chunk_id, embedding)
+                    VALUES (?, ?)
+                ''', (chunk_id, embedding.tobytes()))
     
     def search_spells(self, query, spell_name=None, top_k=3):
         """
@@ -178,10 +237,11 @@ class SpellEmbedder:
         if spell_name:
             # Search within specific spell
             sql_query = '''
-                SELECT ss.sentence_text, ss.source_field, ss.sentence_order,
+                SELECT ss.sentence_text, sc.chunk_text, ss.source_field, ss.sentence_order,
                     vec_distance_cosine(se.embedding, ?) as distance
                 FROM spell_sentences ss
-                JOIN sentence_embeddings se ON ss.id = se.sentence_id
+                JOIN sentence_chunks sc ON ss.id = sc.sentence_id
+                JOIN sentence_embeddings se ON sc.id = se.chunk_id
                 JOIN spells s ON ss.spell_id = s.id
                 WHERE s.name = ?
                 ORDER BY distance ASC
@@ -196,7 +256,8 @@ class SpellEmbedder:
                     vec_distance_cosine(se.embedding, ?) as distance,
                     s.name
                 FROM spell_sentences ss
-                JOIN sentence_embeddings se ON ss.id = se.sentence_id
+                JOIN sentence_chunks sc ON ss.id = sc.sentence_id
+                JOIN sentence_embeddings se ON sc.id = se.chunk_id
                 JOIN spells s ON ss.spell_id = s.id
                 ORDER BY distance ASC
                 LIMIT ?
@@ -210,12 +271,12 @@ class SpellEmbedder:
         if spell_name:
             print(f"Raw results (distance order) for spell '{spell_name}': {query}")
             for i, result in enumerate(results):
-                text, field, order, distance = result
+                text, chunk_text, field, order, distance = result
                 similarity = 1 - distance
-                print(f"{i}. [distance: {distance:.3f}, similarity: {similarity:.3f}] {text}")
+                print(f"{i}. [distance: {distance:.3f}, similarity: {similarity:.3f}] {chunk_text}")
             
             # Convert to similarity scores
-            similarity_results = [(text, field, order, 1 - distance) for text, field, order, distance in results]
+            similarity_results = [(text, field, order, 1 - distance) for text, chunk_text, field, order, distance in results]
             return similarity_results
         else:
             print(f"Raw results (distance order) across all spells: {query}")

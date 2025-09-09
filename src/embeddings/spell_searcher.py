@@ -24,12 +24,20 @@ class SpellSearcher:
             boost_score += 0.2
         
         # Boost for quantity questions and numbers
-        if any(word in query.lower() for word in ['how many', 'number']) and (re.search(r'\b\d+\b', sentence) or re.search(r'\b(one|two|three|four|five|six|seven|eight|nine|ten)\b', sentence.lower())):
-            boost_score += 0.2
+        # Only boost if a standalone number is present, but NOT if "damage" appears exactly two words after the number
+        if any(word in query.lower() for word in ['how many', 'number']):
+            # Match a number not followed by a word and then "damage" ie Force damage or Fire damage
+            # and NOT if the number is preceded by "level above" (e.g., "level above 5")
+            number_pattern = r'\b(?<!level above\s)(\d+)\b(?!\s+\w+\s+damage\b)'
+            word_number_pattern = r'\b(one|two|three|four|five|six|seven|eight|nine|ten)\b'
+            # Check for digit numbers not preceded by "level"/"levels" and not followed by "damage"
+            if re.search(number_pattern, sentence.lower()) or \
+                (re.search(word_number_pattern, sentence.lower()) and not re.search(r'(level|levels)\s+(one|two|three|four|five|six|seven|eight|nine|ten)\b', sentence.lower())):
+                boost_score += 0.2
         
         return min(boost_score, 0.5)  # Cap boost at 0.5
 
-    def search(self, query, specific_spell=None, top_k=3):
+    def search(self, query, specific_spell=None, min_score=0.5, max_results=5):
         """
         Search for information in spells and return ordered results.
         
@@ -41,23 +49,47 @@ class SpellSearcher:
         Returns:
             Ordered text response
         """
-        results = self.embedder.search_spells(query, specific_spell, top_k * 2)
-        
+        results = self.embedder.search_spells(query, specific_spell, 25) # get a bunch we'll filter them here
+
         # Apply keyword boosting
         boosted_results = []
+        failover_results = []
         for result in results:
             text, field, order, similarity = result[:4]
             keyword_boost = self._calculate_keyword_boost(query, text)
             boosted_similarity = similarity + keyword_boost
-            
+
             boosted_result = list(result)
             boosted_result[3] = boosted_similarity
-            boosted_results.append(tuple(boosted_result))
-        
+
+            if boosted_similarity >= min_score:
+                boosted_results.append(tuple(boosted_result))
+            else:
+                failover_results.append(tuple(boosted_result))
+
+        if len(boosted_results) == 0:
+            # If no boosted results meet the threshold, use failover results
+            boosted_results.extend(failover_results)
+            # only return half the max requested
+            max_results = max_results // 2 if max_results >= 2 else 1
+
         # Re-sort and take top_k
         boosted_results.sort(key=lambda x: x[3], reverse=True)
-        results = boosted_results[:top_k]
-        
+
+        # clear duplicates
+        seen = set()
+        unique_results = []
+        for result in boosted_results:
+            if result[0] not in seen:
+                seen.add(result[0])
+                unique_results.append(result)
+
+        results = unique_results[:max_results]
+
+        print("RESULTS:")
+        for (text, field, order, score) in results:
+            print(f"{order}. {text} (score: {score:.3f})")
+
         if not results:
             return "No relevant information found."
         
@@ -121,7 +153,7 @@ def main():
             continue
         
         try:
-            response = searcher.search(query, top_k=3)
+            response = searcher.search(query, min_score=0.5, max_results=5)
             print(f"\nAccording to the spell: {response}")
         except Exception as e:
             print(f"Error: {e}")
