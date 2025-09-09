@@ -10,11 +10,6 @@ class ChatbotInterface(ABC):
         pass
 
     @abstractmethod
-    def train(self) -> None:
-        """Train the chatbot"""
-        pass
-
-    @abstractmethod
     def load(self) -> None:
         """Load the chatbot model"""
         pass

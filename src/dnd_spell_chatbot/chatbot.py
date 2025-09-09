@@ -3,6 +3,7 @@ from chatbot_core import Assistant, Trainer
 from chatbot_core.models import ModelData
 from chatbot_core.interfaces import ChatbotInterface
 from .spell_ner import SpellNer
+from .spell_searcher import SpellSearcher
 import re
 
 class Chatbot(ChatbotInterface):
@@ -13,6 +14,7 @@ class Chatbot(ChatbotInterface):
         artifacts_dir = current_dir / 'artifacts'
         self.intents_path = current_dir / 'data' / 'intents.json'
         self.spells_path = current_dir / 'data' / 'spells.json'
+        self.spells_db_path = artifacts_dir / 'spells.db'
         self.model_path = artifacts_dir / 'chatbot_model.pth'
         self.model_data_path = artifacts_dir / 'model_data.json'
         self.exceptions_path = current_dir / 'logs' / 'exceptions.log'
@@ -58,14 +60,7 @@ class Chatbot(ChatbotInterface):
             self.exceptions_path
         )
 
-    def train(self):
-        trainer = Trainer(self.intents_path)
-        trainer.train_and_save(self.model_path, self.model_data_path, self.intents_path)
-
-        self.assistant = Assistant(
-            trainer.model_data,
-            self.exceptions_path
-        )
+        self.vector_searcher = SpellSearcher(self.spells_db_path)
 
     def run(self):
         print("Welcome to the DnD Spell Chatbot!")
@@ -74,10 +69,6 @@ class Chatbot(ChatbotInterface):
         while True:
             message = input('You:')
 
-            if message == "/retrain":
-                self.train()
-                continue
-
             if message == "/quit":
                 exit()
 
@@ -85,7 +76,7 @@ class Chatbot(ChatbotInterface):
 
             # Extract spell entities if this intent requires NER
             entities = {}
-            if self.ner.intent_requires_ner(predicted_intent):
+            if self.ner.intent_requires_ner(predicted_intent) or not predicted_intent:
                 entities = self.ner.extract_entities(message)
                 
                 if entities["confidence"] < 65:
@@ -93,7 +84,11 @@ class Chatbot(ChatbotInterface):
                 elif entities["confidence"] < 80:
                     response = f"I couldn't find that spell in my grimoire. Did you mean {entities['spell_name']}?"
                 else:
-                    response = self.substitute_spell_data(response, entities)
+                    if predicted_intent:
+                        response = self.substitute_spell_data(response, entities)
+                    else:
+                        response = self.vector_searcher.search(message, entities['spell_name'], 0.5, 3)
+
 
             print(response)
             

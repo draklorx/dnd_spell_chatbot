@@ -1,7 +1,7 @@
 import os
 from dnd_spell_chatbot.chatbot import Chatbot
 
-def intents_updated(model_path, model_data_path, intents_path) -> bool:
+def need_to_train(model_path, model_data_path, intents_path) -> bool:
     """Check if the intents file has been modified since the model was last trained"""
     # If model doesn't exist, it needs to be trained
     if not model_path.exists() or not model_data_path.exists():
@@ -17,8 +17,9 @@ def intents_updated(model_path, model_data_path, intents_path) -> bool:
 if __name__ == "__main__":
     try:
         chatbot = Chatbot()
-        if intents_updated(chatbot.model_path, chatbot.model_data_path, chatbot.intents_path):
-            chatbot.train()
+        if need_to_train(chatbot.model_path, chatbot.model_data_path, chatbot.intents_path):
+            print("The model is out of date. Train it by running train.py")
+            exit()
         else:
             print("Loading existing model...")
             chatbot.load()
@@ -26,6 +27,7 @@ if __name__ == "__main__":
         print(f"Error occurred during initialization: {e}")
         exit()
 
+    chatbot.run()
     try:
         chatbot.run()
     except Exception as e:

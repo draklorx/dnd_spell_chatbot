@@ -1,2 +1,3 @@
 from .chatbot_interface import ChatbotInterface
+from .chatbot_trainer_interface import ChatbotTrainerInterface
 from .ner_interface import NerInterface
