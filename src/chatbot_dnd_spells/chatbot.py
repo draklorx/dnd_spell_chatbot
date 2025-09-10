@@ -1,9 +1,10 @@
 from pathlib import Path
-from chatbot_core import Assistant, Trainer
-from chatbot_core.models import ModelData
-from chatbot_core.interfaces import ChatbotInterface
+from intents import Assistant, Trainer
+from intents.models import ModelData
+from intents.interfaces import ChatbotInterface
+from chatbot_dnd_spells.chatbot_config import ChatbotConfig
 from .spell_ner import SpellNer
-from .spell_searcher import SpellSearcher
+from .embeddings.spell_searcher import SpellSearcher
 import re
 
 class Chatbot(ChatbotInterface):
@@ -11,16 +12,9 @@ class Chatbot(ChatbotInterface):
     def __init__(self):
         # Get paths relative to this file's location
         current_dir = Path(__file__).parent
-        artifacts_dir = current_dir / 'artifacts'
-        self.intents_path = current_dir / 'data' / 'intents.json'
-        self.spells_path = current_dir / 'data' / 'spells.json'
-        self.spells_db_path = artifacts_dir / 'spells.db'
-        self.model_path = artifacts_dir / 'chatbot_model.pth'
-        self.model_data_path = artifacts_dir / 'model_data.json'
-        self.exceptions_path = current_dir / 'logs' / 'exceptions.log'
+        self.config = ChatbotConfig(current_dir)
+        self.ner = SpellNer(self.config.spells_path)
         self.function_mappings = {}
-
-        self.ner = SpellNer(self.spells_path)
 
 
     @staticmethod
@@ -51,23 +45,28 @@ class Chatbot(ChatbotInterface):
     
     def load(self):
         print("Loading model...")
-        print(self.model_path)
-        print(self.model_data_path)
-        model_data = ModelData.load_model(self.model_path, self.model_data_path)
+        model_data = ModelData.load_model(self.config.model_path, self.config.model_data_path)
 
         self.assistant = Assistant(
             model_data,
-            self.exceptions_path
+            self.config.exceptions_path
         )
 
-        self.vector_searcher = SpellSearcher(self.spells_db_path)
+        self.vector_searcher = SpellSearcher(self.config.spells_db_path)
 
     def run(self):
         print("Welcome to the DnD Spell Chatbot!")
-        print("Type '/retrain' to retrain the model or '/quit' to exit.")
+        print("Type '/debug' to enter debug mode or '/quit' to exit.")
 
         while True:
             message = input('You:')
+
+            if message == "/debug":
+                self.debug = True
+                self.assistant.debug = True
+                self.vector_searcher.debug = True
+                print("Debug mode enabled.")
+                continue
 
             if message == "/quit":
                 exit()
@@ -87,10 +86,11 @@ class Chatbot(ChatbotInterface):
                     if predicted_intent:
                         response = self.substitute_spell_data(response, entities)
                     else:
-                        response = self.vector_searcher.search(message, entities['spell_name'], 0.5, 3)
+                        response = self.vector_searcher.search(message, entities['spell_name'], 0.45, 0.5, 3)
 
 
             print(response)
+            print() # add a blank line for readability
             
             # Handle function mappings
             if predicted_intent in self.function_mappings:

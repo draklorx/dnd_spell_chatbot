@@ -1,10 +1,12 @@
 from embeddings import VectorSearcher
 import re
+from ..colors import YELLOW, RESET
 
 class SpellSearcher(VectorSearcher):
     def __init__(self, db_path="spells.db"):
         """Initialize the spell searcher."""
         super().__init__(db_path)
+        self.debug = False
     
     def _calculate_keyword_boost(self, query, sentence):
         """Calculate keyword relevance boost."""
@@ -29,9 +31,15 @@ class SpellSearcher(VectorSearcher):
                 (re.search(word_number_pattern, sentence.lower()) and not re.search(r'(level|levels)\s+(one|two|three|four|five|six|seven|eight|nine|ten)\b', sentence.lower())):
                 boost_score += 0.2
         
-        return min(boost_score, 0.5)  # Cap boost at 0.5
+        if any(word in query.lower() for word in ['save', 'saving throw']) and 'saving throw' in sentence.lower():
+            boost_score += 0.2
 
-    def search(self, query, spell_name, min_score=0.5, max_results=5):
+        if any(word in query.lower() for word in ['aoe', 'area of effect', 'radius', 'area', 'diameter']) and \
+            any(word in sentence.lower() for word in ['radius', 'area of effect', 'sphere', 'cylinder', 'cone', 'cube', 'line', 'diameter']):
+            boost_score += 0.2
+        return boost_score
+
+    def search(self, query, spell_name, rec_score=0.5, min_score=0.4, max_results=5):
         """
         Search for information in spells and return ordered results.
         
@@ -56,9 +64,9 @@ class SpellSearcher(VectorSearcher):
             boosted_result = list(result)
             boosted_result[2] = boosted_similarity
 
-            if boosted_similarity >= min_score:
+            if boosted_similarity >= rec_score:
                 boosted_results.append(tuple(boosted_result))
-            else:
+            elif boosted_similarity >= min_score:
                 failover_results.append(tuple(boosted_result))
 
         if len(boosted_results) == 0:
@@ -79,9 +87,13 @@ class SpellSearcher(VectorSearcher):
         results = unique_results[:max_results]
 
         # TODO Add debug mode
-        # print("BOOSTED RESULTS:")
-        # for (text, order, score) in results:
-        #     print(f"{order}. {text} (score: {score:.3f})")
+        if self.debug:
+            print(f"{YELLOW}Debug: Search results for query for {spell_name}{RESET}")
+            print(f"{YELLOW}Minimum score: {min_score} | Recommended score: {rec_score}{RESET}")
+            # print results in score order
+            debug_sorted = sorted(results, key=lambda x: x[2], reverse=True)
+            for (text, order, score) in debug_sorted:
+                print(f"{YELLOW}score: {score:.3f} - {text}{RESET}")
 
         if not results:
             return "No relevant information found."
@@ -102,6 +114,5 @@ class SpellSearcher(VectorSearcher):
         # Combine sentences
         response_parts = [sentence[0] for sentence in relevant_sentences]
         response = " ".join(response_parts)
-        
-        return response
-        
+
+        return f"According to {spell_name}: {response}"

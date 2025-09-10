@@ -8,7 +8,7 @@ class VectorSearcher:
     
     def search(self, query, entry_name, top_k=5):
         """
-        Search for relevant sentences in entries.
+        Search for relevant context in entries.
         
         Args:
             query: User query

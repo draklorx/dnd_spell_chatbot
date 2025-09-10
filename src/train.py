@@ -1,11 +1,11 @@
-import json
-from dnd_spell_chatbot import ChatbotTrainer
-from embeddings import Embedder
+from chatbot_dnd_spells import ChatbotTrainer
 
 if __name__ == "__main__":
-    try:
-        trainer = ChatbotTrainer()
-        trainer.train()
-    except Exception as e:
-        print(f"Error occurred during setup & training: {e}")
-        exit()
+    trainer = ChatbotTrainer()
+    trainer.train()
+    # try:
+    #     trainer = ChatbotTrainer()
+    #     trainer.train()
+    # except Exception as e:
+    #     print(f"Error occurred during setup & training: {e}")
+    #     exit()

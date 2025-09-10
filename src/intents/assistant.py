@@ -3,11 +3,13 @@ import random
 import torch
 import torch.nn.functional as F
 from .utils.data_preprocessor import DataPreprocessor
+from chatbot_dnd_spells.colors import YELLOW, RESET
 
 class Assistant:
     def __init__(self, model, exceptions_path):
         self.model_data = model
         self.exceptions_path = exceptions_path
+        self.debug = False
 
     def write_exception(self, input_message, predicted_tag, confidence):
         with open(self.exceptions_path, "a") as f:
@@ -28,7 +30,9 @@ class Assistant:
         predicted_intent = self.model_data.intents[predicted_class_index]
 
         # Only respond if confidence is high enough
-        if confidence < 0.7:
+        if (self.debug):
+            print(f"{YELLOW}Debug: Predicted {predicted_intent} (confidence: {confidence:.3f}){RESET}")
+        if confidence < 0.8:
             self.write_exception(input_message, predicted_intent, confidence)
             return (None, "I'm not sure what you mean. Can you rephrase?")
 

@@ -1,5 +1,5 @@
 import os
-from dnd_spell_chatbot.chatbot import Chatbot
+from chatbot_dnd_spells.chatbot import Chatbot
 
 def need_to_train(model_path, model_data_path, intents_path) -> bool:
     """Check if the intents file has been modified since the model was last trained"""
@@ -17,7 +17,7 @@ def need_to_train(model_path, model_data_path, intents_path) -> bool:
 if __name__ == "__main__":
     try:
         chatbot = Chatbot()
-        if need_to_train(chatbot.model_path, chatbot.model_data_path, chatbot.intents_path):
+        if need_to_train(chatbot.config.model_path, chatbot.config.model_data_path, chatbot.config.intents_path):
             print("The model is out of date. Train it by running train.py")
             exit()
         else:

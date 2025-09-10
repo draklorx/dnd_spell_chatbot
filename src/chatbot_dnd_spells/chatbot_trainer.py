@@ -1,8 +1,9 @@
 import json
-from embeddings import Embedder
 from pathlib import Path
-from chatbot_core import Trainer
-from chatbot_core.interfaces import ChatbotTrainerInterface
+from embeddings import Embedder, SentenceChunker
+from embeddings.data_classes import RawEntry
+from intents import Trainer
+from intents.interfaces import ChatbotTrainerInterface
 
 class ChatbotTrainer(ChatbotTrainerInterface):
     
@@ -10,7 +11,7 @@ class ChatbotTrainer(ChatbotTrainerInterface):
         # Get paths relative to this file's location
         current_dir = Path(__file__).parent
         artifacts_dir = current_dir / 'artifacts'
-        self.intents_path = current_dir / 'data' / 'intents.json'
+        self.intents_path = current_dir / 'intents' / 'intents.json'
         self.model_path = artifacts_dir / 'chatbot_model.pth'
         self.model_data_path = artifacts_dir / 'model_data.json'
         self.spells_path = current_dir / 'data' / 'spells.json'
@@ -38,13 +39,10 @@ class ChatbotTrainer(ChatbotTrainerInterface):
                 entry_text += " " + entry['higherLevelSlot']
             if 'cantripUpgrade' in entry and entry['cantripUpgrade']:
                 entry_text += " " + entry['cantripUpgrade']
-            entries.append({
-                'name': entry['name'],
-                'text': entry_text,
-            })
+            entries.append(RawEntry(entry['name'], entry_text))
 
         # Load and process the spells
+        chunker = SentenceChunker()
         embedder = Embedder(self.spells_db_path)
-        embedder.process_entries(entries)
-            
-        embedder.close()
+        chunked_entries = chunker.chunk_entries(entries)
+        embedder.process_entries(chunked_entries)

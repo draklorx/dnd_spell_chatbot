@@ -1,0 +1,22 @@
+Message: What is its saving throw?, Predicted Tag: level, Confidence: 0.33709684014320374
+Message: What is its saving throw?, Predicted Tag: level, Confidence: 0.33709684014320374
+Message: What is its saving throw?, Predicted Tag: level, Confidence: 0.33709684014320374
+Message: What is fireball's saving throw?, Predicted Tag: info, Confidence: 0.6413528323173523
+Message: What is its saving throw?, Predicted Tag: level, Confidence: 0.33709684014320374
+Message: What is fireballs saving throw?, Predicted Tag: info, Confidence: 0.3695964515209198
+Message: What is fireball's saving throw?, Predicted Tag: info, Confidence: 0.6413528323173523
+Message: What's its damage?, Predicted Tag: info, Confidence: 0.5960023403167725
+Message: /debug, Predicted Tag: info, Confidence: 0.5579448938369751
+Message: /debug, Predicted Tag: info, Confidence: 0.5579448938369751
+Message: /debug, Predicted Tag: info, Confidence: 0.5579448938369751
+Message: What is the damage for fireball?, Predicted Tag: info, Confidence: 0.21050842106342316
+Message: What is the damage for fireball?, Predicted Tag: info, Confidence: 0.21050842106342316
+Message: How much soup for fireball?, Predicted Tag: info, Confidence: 0.50218266248703
+Message: What is the saving throw for magic missile?, Predicted Tag: info, Confidence: 0.21050842106342316
+Message: What is the damage for fireball?, Predicted Tag: info, Confidence: 0.21050842106342316
+Message: What is the saving throw for magic missile?, Predicted Tag: info, Confidence: 0.21050842106342316
+Message: What is the saving throw for magic missile?, Predicted Tag: info, Confidence: 0.21050842106342316
+Message: What is the sainv throw for magic missile?, Predicted Tag: info, Confidence: 0.21050842106342316
+Message: What is the saving throw for magic missile?, Predicted Tag: info, Confidence: 0.21050842106342316
+Message: How many darts does magic missile fire?, Predicted Tag: info, Confidence: 0.7094551920890808
+Message: What is the damage for magic missile?, Predicted Tag: info, Confidence: 0.21050842106342316

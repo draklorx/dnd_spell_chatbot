@@ -1,6 +1,7 @@
 import json
 from fuzzywuzzy import fuzz
-from chatbot_core.interfaces import NerInterface
+from intents.interfaces import NerInterface
+import re
 
 class SpellNer(NerInterface):
     def __init__(self, spells_data_path: str):
@@ -28,8 +29,11 @@ class SpellNer(NerInterface):
         entities = {}
         
         # Check for pronouns that might refer to previous spell
-        pronouns = ['it', 'its', 'that', 'this spell', 'that spell', 'the spell', 'this one']
-        has_pronoun = any(pronoun in text_lower for pronoun in pronouns)
+        pronouns = ['it', 'its', 'that', 'their', 'this spell', 'that spell', 'the spell', 'this one']
+        has_pronoun = any(
+            re.search(r'\b' + re.escape(pronoun) + r'\b', text_lower)
+            for pronoun in pronouns
+        )
         
         # If pronoun is used and we have context from previous message
         if has_pronoun and self.conversation_context["last_spell"]:
