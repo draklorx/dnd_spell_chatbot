@@ -28,14 +28,15 @@ class VectorSearcher:
         results = get_embeddings_for_entry(self.embedder.conn, query_embedding, entry_name, top_k)
 
         # TODO Add debug mode
-        # print(f"Raw results (distance order) for entry '{entry_name}': {query}")
-        # for i, result in enumerate(results):
-        #     text, chunk_text, order, distance = result
-        #     similarity = 1 - distance
-        #     print(f"{i}. [distance: {distance:.3f}, similarity: {similarity:.3f}] {chunk_text}")
+        if self.debug:
+            print(f"Raw results (distance order) for entry '{entry_name}': {query}")
+            for result in results:
+                text, chunk_text, position, distance = result
+                similarity = 1 - distance
+                print(f"[similarity: {similarity:.3f}] {chunk_text}")
         
         # Convert to similarity scores
-        similarity_results = [(text, order, 1 - distance) for text, chunk_text, order, distance in results]
+        similarity_results = [(text, position, 1 - distance) for text, chunk_text, position, distance in results]
         return similarity_results
     
     def close(self):
