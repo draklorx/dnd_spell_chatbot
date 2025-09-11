@@ -1,13 +1,13 @@
 import random
+from .models.spacy_intent_classifier import SpacyIntentClassifier
 
-import torch
-import torch.nn.functional as F
-from .utils.data_preprocessor import DataPreprocessor
-from chatbot_dnd_spells.colors import YELLOW, RESET
+# Define colors directly to avoid circular imports
+YELLOW = "\033[93m"
+RESET = "\033[0m"
 
 class Assistant:
     def __init__(self, model, exceptions_path):
-        self.model_data = model
+        self.intent_classifier = model
         self.exceptions_path = exceptions_path
         self.debug = False
 
@@ -16,28 +16,20 @@ class Assistant:
             f.write(f"Message: {input_message}, Predicted Tag: {predicted_tag}, Confidence: {confidence}\n")
 
     def process_message(self, input_message) -> tuple[str | None, str]:
-        words = DataPreprocessor.tokenize_and_lemmatize(input_message)
-        bag = DataPreprocessor.bag_of_words(words, self.model_data.vocabulary)
-
-        bag_tensor = torch.tensor([bag], dtype=torch.float32)
-        self.model_data.intent_classifier.eval()
-        with torch.no_grad():
-            logits = self.model_data.intent_classifier(bag_tensor)
-            probabilities = F.softmax(logits, dim=1)
-            confidence = torch.max(probabilities).item()
-        
-        predicted_class_index = torch.argmax(probabilities, dim=1).item()
-        predicted_intent = self.model_data.intents[predicted_class_index]
+        # Use spaCy intent classifier for prediction
+        predicted_intent, confidence = self.intent_classifier.predict(input_message)
 
         # Only respond if confidence is high enough
-        if (self.debug):
+        if self.debug:
             print(f"{YELLOW}Debug: Predicted {predicted_intent} (confidence: {confidence:.3f}){RESET}")
-        if confidence < 0.8:
+            
+        if confidence < 0.6:  # Lowered from 0.8 for better spaCy performance
             self.write_exception(input_message, predicted_intent, confidence)
             return (None, "I'm not sure what you mean. Can you rephrase?")
 
-        # Generate response with entity substitution
-        if self.model_data.intents_responses[predicted_intent]:
-            return (predicted_intent, random.choice(self.model_data.intents_responses[predicted_intent]))
+        # Generate response
+        if predicted_intent:
+            response = self.intent_classifier.get_response(predicted_intent)
+            return (predicted_intent, response)
 
         return (None, "I'm not sure how to respond to that.")

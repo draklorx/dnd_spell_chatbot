@@ -2,7 +2,7 @@ from .db_queries import get_embeddings_for_entry
 from .embedder import Embedder
 
 class VectorSearcher:
-    def __init__(self, db_path="spells.db"):
+    def __init__(self, db_path):
         """Initialize the spell searcher."""
         self.embedder = Embedder(db_path)
     

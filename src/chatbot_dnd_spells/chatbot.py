@@ -1,6 +1,7 @@
 from pathlib import Path
-from intents import Assistant, Trainer
-from intents.models import ModelData
+from intents.assistant import Assistant
+from intents.trainer import Trainer
+from intents.models.spacy_intent_classifier import SpacyIntentClassifier
 from intents.interfaces import ChatbotInterface
 from chatbot_dnd_spells.chatbot_config import ChatbotConfig
 from .spell_ner import SpellNer
@@ -15,7 +16,6 @@ class Chatbot(ChatbotInterface):
         self.config = ChatbotConfig(current_dir)
         self.ner = SpellNer(self.config.spells_path)
         self.function_mappings = {}
-
 
     @staticmethod
     def substitute_spell_data(response: str, entities: dict) -> str:
@@ -45,10 +45,11 @@ class Chatbot(ChatbotInterface):
     
     def load(self):
         print("Loading model...")
-        model_data = ModelData.load_model(self.config.model_path, self.config.model_data_path)
+        intent_classifier = SpacyIntentClassifier()
+        intent_classifier.load_model(self.config.model_path, self.config.model_data_path)
 
         self.assistant = Assistant(
-            model_data,
+            intent_classifier,
             self.config.exceptions_path
         )
 
