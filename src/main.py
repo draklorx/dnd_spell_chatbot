@@ -1,5 +1,5 @@
 import os
-from chatbot_dnd_spells.chatbot import Chatbot
+from chatbot_dnd_spells import Chatbot
 
 def need_to_train(model_path, model_data_path, intents_path) -> bool:
     """Check if the intents file has been modified since the model was last trained"""

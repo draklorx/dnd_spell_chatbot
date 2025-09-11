@@ -58,6 +58,7 @@
             "tag": "range",
             "patterns": [
                 "What is the range of {name}?",
+                "What is the range on {name}?",
                 "How far can {name} reach?",
                 "What is {name} range?",
                 "What's its range?",

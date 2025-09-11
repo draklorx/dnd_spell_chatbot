@@ -6,7 +6,7 @@ import json
 import os
 from pathlib import Path
 
-class SpacyIntentClassifier:
+class IntentClassifier:
     def __init__(self):
         self.nlp = None
         self.intents = []
@@ -127,8 +127,9 @@ class SpacyIntentClassifier:
         if self.nlp is None:
             raise ValueError("No model to save")
             
-        # Save spaCy model
-        model_dir = Path(model_path)
+        # Save spaCy model - use parent directory and create spacy_intent_model subdirectory
+        base_dir = Path(model_path).parent
+        model_dir = base_dir / "spacy_intent_model"
         model_dir.mkdir(parents=True, exist_ok=True)
         self.nlp.to_disk(model_dir)
         
@@ -141,13 +142,15 @@ class SpacyIntentClassifier:
         with open(model_data_path, 'w') as f:
             json.dump(metadata, f, indent=2)
             
-        print(f"Model saved to {model_path}")
+        print(f"Model saved to {model_dir}")
         print(f"Metadata saved to {model_data_path}")
     
     def load_model(self, model_path: str, model_data_path: str):
         """Load a trained spaCy model and metadata"""
-        # Load spaCy model
-        self.nlp = spacy.load(model_path)
+        # Load spaCy model - look in the spacy_intent_model subdirectory
+        base_dir = Path(model_path).parent
+        model_dir = base_dir / "spacy_intent_model"
+        self.nlp = spacy.load(model_dir)
         
         # Load metadata
         with open(model_data_path, 'r') as f:

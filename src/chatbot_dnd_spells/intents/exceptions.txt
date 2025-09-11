@@ -26,3 +26,5 @@ Message: What's the range of lightning bolt?, Predicted Tag: range, Confidence: 
 Message: Random unrelated message that shouldn't match, Predicted Tag: school, Confidence: 0.3151599168777466
 Message: Random unrelated message that shouldn't match, Predicted Tag: school, Confidence: 0.3151599168777466
 Message: This is a random message that shouldn't match anything, Predicted Tag: info, Confidence: 0.3538776934146881
+Message: How much damage does fireball do?, Predicted Tag: info, Confidence: 0.6898419260978699
+Message: What is the range on fireball?, Predicted Tag: range, Confidence: 0.31802964210510254

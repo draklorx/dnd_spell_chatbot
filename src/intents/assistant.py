@@ -1,5 +1,5 @@
 import random
-from .models.spacy_intent_classifier import SpacyIntentClassifier
+from .intent_classifier import IntentClassifier
 
 # Define colors directly to avoid circular imports
 YELLOW = "\033[93m"
@@ -23,7 +23,7 @@ class Assistant:
         if self.debug:
             print(f"{YELLOW}Debug: Predicted {predicted_intent} (confidence: {confidence:.3f}){RESET}")
             
-        if confidence < 0.6:  # Lowered from 0.8 for better spaCy performance
+        if confidence < 0.7:
             self.write_exception(input_message, predicted_intent, confidence)
             return (None, "I'm not sure what you mean. Can you rephrase?")
 

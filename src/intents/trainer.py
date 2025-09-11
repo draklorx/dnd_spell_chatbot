@@ -1,8 +1,8 @@
-from .models.spacy_intent_classifier import SpacyIntentClassifier
+from .intent_classifier import IntentClassifier
 
 class Trainer:
     def __init__(self, intents_path):
-        self.intent_classifier = SpacyIntentClassifier()
+        self.intent_classifier = IntentClassifier()
         self.intents_path: str = intents_path
 
     def train_model(self, n_iter=20):
