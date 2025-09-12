@@ -1,12 +1,10 @@
 from pathlib import Path
 from .spell_entity_classifier import SpellEntityClassifier
 from intents.assistant import Assistant
-from intents.trainer import Trainer
 from intents import IntentClassifier
 from intents.interfaces import ChatbotInterface
 from chatbot_dnd_spells.chatbot_config import ChatbotConfig
-# from .spell_ner import SpellNer
-from .embeddings.spell_searcher import SpellSearcher
+from .spell_searcher import SpellSearcher
 import re
 
 class Chatbot(ChatbotInterface):
@@ -15,7 +13,6 @@ class Chatbot(ChatbotInterface):
         # Get paths relative to this file's location
         current_dir = Path(__file__).parent
         self.config = ChatbotConfig(current_dir)
-        #self.ner = SpellNer(self.config.spells_path)
         self.function_mappings = {}
         self.entity_classifier = SpellEntityClassifier.load(self.config.entity_classifier_model_path)
 

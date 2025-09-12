@@ -3,7 +3,7 @@ import re
 from utils.colors import YELLOW, RESET
 
 class SpellSearcher(VectorSearcher):
-    def __init__(self, db_path="spells.db"):
+    def __init__(self, db_path):
         """Initialize the spell searcher."""
         super().__init__(db_path)
         self.debug = False

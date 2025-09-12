@@ -14,6 +14,19 @@ class ChatbotTrainer(ChatbotTrainerInterface):
         current_dir = Path(__file__).parent
         self.config = ChatbotConfig(current_dir)
 
+    def preprocess_data(self):
+        print("Starting data preprocessing...")
+        from .data_processor import DataProcessor
+        processor = DataProcessor(
+            self.config.raw_spell_data_path,
+            self.config.raw_entity_label_data_path,
+            self.config.processed_spell_data_path,
+            self.config.processed_entity_label_data_path
+        )
+        processor.process_entity_data()
+        processor.process_spell_data()
+        print("Data preprocessing complete.")
+
     def train_intents(self):
         print ("Starting intent training process...")
         trainer = Trainer(self.config.intents_path)
@@ -23,7 +36,7 @@ class ChatbotTrainer(ChatbotTrainerInterface):
     def train_spell_embeddings(self):
         """Load entries from JSON and process them."""
 
-        with open(self.config.spells_path, 'r', encoding='utf-8') as f:
+        with open(self.config.processed_spell_data_path, 'r', encoding='utf-8') as f:
             spells_data = json.load(f)
 
         entries = []
@@ -45,7 +58,7 @@ class ChatbotTrainer(ChatbotTrainerInterface):
 
     def train_entity_classifier(self):
         print("Starting entity classifier training process...")
-        nlp = SpellEntityClassifier.train(self.config.entity_label_data_path)
+        nlp = SpellEntityClassifier.train(self.config.processed_entity_label_data_path)
         SpellEntityClassifier.save(nlp, self.config.entity_classifier_model_path)
         print("Entity classifier training complete.")
 
@@ -55,19 +68,23 @@ class ChatbotTrainer(ChatbotTrainerInterface):
         """
         while True:
             print ("What would you like to train?")
-            print ("1. Intent Classifier")
-            print ("2. Spell Embeddings")
-            print ("3. Entity Classifier")
+            print ("1. Data Preprocessing")
+            print ("2. Intent Classifier")
+            print ("3. Spell Embeddings")
+            print ("4. Entity Classifier")
             print ("A. All of the above")
             print ("Q. Quit")
             choice = input("You: ").strip()
             if choice == '1':
-                self.train_intents()
+                self.preprocess_data()
             elif choice == '2':
-                self.train_spell_embeddings()
+                self.train_intents()
             elif choice == '3':
+                self.train_spell_embeddings()
+            elif choice == '4':
                 self.train_entity_classifier()
             elif choice.lower() == 'a':
+                self.preprocess_data()
                 self.train_intents()
                 self.train_spell_embeddings()
                 self.train_entity_classifier()
