@@ -1,9 +1,4 @@
-import random
-from .intent_classifier import IntentClassifier
-
-# Define colors directly to avoid circular imports
-YELLOW = "\033[93m"
-RESET = "\033[0m"
+from utils.colors import YELLOW, RESET
 
 class Assistant:
     def __init__(self, model, exceptions_path):

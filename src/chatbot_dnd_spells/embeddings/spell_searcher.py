@@ -1,6 +1,6 @@
 from embeddings import VectorSearcher
 import re
-from ..colors import YELLOW, RESET
+from utils.colors import YELLOW, RESET
 
 class SpellSearcher(VectorSearcher):
     def __init__(self, db_path="spells.db"):

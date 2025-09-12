@@ -1,10 +1,11 @@
 from pathlib import Path
+from .spell_entity_classifier import SpellEntityClassifier
 from intents.assistant import Assistant
 from intents.trainer import Trainer
 from intents import IntentClassifier
 from intents.interfaces import ChatbotInterface
 from chatbot_dnd_spells.chatbot_config import ChatbotConfig
-from .spell_ner import SpellNer
+# from .spell_ner import SpellNer
 from .embeddings.spell_searcher import SpellSearcher
 import re
 
@@ -14,8 +15,9 @@ class Chatbot(ChatbotInterface):
         # Get paths relative to this file's location
         current_dir = Path(__file__).parent
         self.config = ChatbotConfig(current_dir)
-        self.ner = SpellNer(self.config.spells_path)
+        #self.ner = SpellNer(self.config.spells_path)
         self.function_mappings = {}
+        self.entity_classifier = SpellEntityClassifier.load(self.config.entity_classifier_model_path)
 
     @staticmethod
     def substitute_spell_data(response: str, entities: dict) -> str:
@@ -75,19 +77,17 @@ class Chatbot(ChatbotInterface):
             predicted_intent, response = self.assistant.process_message(message)
 
             # Extract spell entities if this intent requires NER
-            entities = {}
-            if self.ner.intent_requires_ner(predicted_intent) or not predicted_intent:
-                entities = self.ner.extract_entities(message)
-                
-                if entities["confidence"] < 65:
-                    response = f"That spell does not exist in my grimoire. I'm limited to SRD data. If your spell is not in the SRD, I won't be able to help."
-                elif entities["confidence"] < 80:
-                    response = f"I couldn't find that spell in my grimoire. Did you mean {entities['spell_name']}?"
-                else:
-                    if predicted_intent:
-                        response = self.substitute_spell_data(response, entities)
-                    else:
-                        response = self.vector_searcher.search(message, entities['spell_name'], 0.45, 0.5, 3)
+            entities = self.entity_classifier.predict(message)
+            print("entities", entities)
+            # if entities["confidence"] < 65:
+            #     response = f"That spell does not exist in my grimoire. I'm limited to SRD data. If your spell is not in the SRD, I won't be able to help."
+            # elif entities["confidence"] < 80:
+            #     response = f"I couldn't find that spell in my grimoire. Did you mean {entities['spell_name']}?"
+            # else:
+            #     if predicted_intent:
+            #         response = self.substitute_spell_data(response, entities)
+            #     else:
+            #         response = self.vector_searcher.search(message, entities['spell_name'], 0.45, 0.5, 3)
 
 
             print(response)

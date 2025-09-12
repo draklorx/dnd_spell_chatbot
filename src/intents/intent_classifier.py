@@ -15,7 +15,7 @@ class IntentClassifier:
     def create_model(self, intents: list[str]):
         """Create a new spaCy model with text categorizer component"""
         # Create blank English model
-        self.nlp = spacy.blank("en")
+        self.nlp = spacy.load("en_core_web_md")
         
         # Add text categorizer to the pipeline with correct config
         textcat = self.nlp.add_pipe("textcat")

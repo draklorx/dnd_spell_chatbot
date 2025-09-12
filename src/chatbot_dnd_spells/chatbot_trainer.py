@@ -1,33 +1,29 @@
 import json
 from pathlib import Path
+from chatbot_dnd_spells.chatbot_config import ChatbotConfig
 from embeddings import Embedder, SentenceChunker
 from embeddings.data_classes import RawEntry
 from intents import Trainer
 from intents.interfaces import ChatbotTrainerInterface
+from .spell_entity_classifier import SpellEntityClassifier
 
 class ChatbotTrainer(ChatbotTrainerInterface):
     
     def __init__(self):
         # Get paths relative to this file's location
         current_dir = Path(__file__).parent
-        artifacts_dir = current_dir / 'artifacts'
-        self.intents_path = current_dir / 'intents' / 'intents.json'
-        self.model_path = artifacts_dir / 'chatbot_model.pth'
-        self.model_data_path = artifacts_dir / 'model_data.json'
-        self.spells_path = current_dir / 'data' / 'spells.json'
-        self.spells_db_path = artifacts_dir / 'spells.db'
+        self.config = ChatbotConfig(current_dir)
 
-    def train(self):
-        """
-        Train the chatbot model.
-        """
-        print ("Starting training process...")
-        trainer = Trainer(self.intents_path)
-        trainer.train_and_save(self.model_path, self.model_data_path, self.intents_path)
-            
+    def train_intents(self):
+        print ("Starting intent training process...")
+        trainer = Trainer(self.config.intents_path)
+        trainer.train_and_save(self.config.model_path, self.config.model_data_path, self.config.intents_path)
+        print ("Intent training complete.")
+
+    def train_spell_embeddings(self):
         """Load entries from JSON and process them."""
 
-        with open(self.spells_path, 'r', encoding='utf-8') as f:
+        with open(self.config.spells_path, 'r', encoding='utf-8') as f:
             spells_data = json.load(f)
 
         entries = []
@@ -43,6 +39,41 @@ class ChatbotTrainer(ChatbotTrainerInterface):
 
         # Load and process the spells
         chunker = SentenceChunker()
-        embedder = Embedder(self.spells_db_path)
+        embedder = Embedder(self.config.spells_db_path)
         chunked_entries = chunker.chunk_entries(entries)
         embedder.process_entries(chunked_entries)
+
+    def train_entity_classifier(self):
+        print("Starting entity classifier training process...")
+        nlp = SpellEntityClassifier.train(self.config.entity_label_data_path)
+        SpellEntityClassifier.save(nlp, self.config.entity_classifier_model_path)
+        print("Entity classifier training complete.")
+
+    def train(self):
+        """
+        Train the chatbot model.
+        """
+        while True:
+            print ("What would you like to train?")
+            print ("1. Intent Classifier")
+            print ("2. Spell Embeddings")
+            print ("3. Entity Classifier")
+            print ("A. All of the above")
+            print ("Q. Quit")
+            choice = input("You: ").strip()
+            if choice == '1':
+                self.train_intents()
+            elif choice == '2':
+                self.train_spell_embeddings()
+            elif choice == '3':
+                self.train_entity_classifier()
+            elif choice.lower() == 'a':
+                self.train_intents()
+                self.train_spell_embeddings()
+                self.train_entity_classifier()
+            elif choice.lower() == 'q':
+                print("Exiting training.")
+                exit()
+            else:
+                print("Invalid choice. Please enter 1, 2, 3, or 'q' to quit.")
+                continue

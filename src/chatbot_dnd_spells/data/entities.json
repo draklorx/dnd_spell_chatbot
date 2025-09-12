@@ -1,0 +1,84 @@
+{
+    "entities": [
+        {
+            "label": "CLASS",
+            "patterns": [
+                "bard",
+                "cleric",
+                "druid",
+                "paladin",
+                "ranger",
+                "sorcerer",
+                "warlock",
+                "wizard"
+            ]
+        },
+        {
+            "label": "SCHOOL",
+            "patterns": [
+                "abjuration",
+                "conjuration",
+                "divination",
+                "enchantment",
+                "evocation",
+                "illusion",
+                "necromancy",
+                "transmutation"
+            ]
+        },
+        {
+            "label": "DAMAGE_TYPE",
+            "patterns": [
+                "acid",
+                "bludgeoning",
+                "cold",
+                "fire",
+                "force",
+                "lightning",
+                "necrotic",
+                "piercing",
+                "poison",
+                "psychic",
+                "radiant",
+                "slashing",
+                "thunder"
+            ]
+        },
+        {
+            "label": "SAVING_THROW",
+            "patterns": [
+                "strength saving throw",
+                "dexterity saving throw",
+                "constitution saving throw",
+                "intelligence saving throw",
+                "wisdom saving throw",
+                "charisma saving throw"
+            ]
+        },
+        {
+            "label": "LEVEL",
+            "patterns": [
+                "1st level",
+                "2nd level",
+                "3rd level",
+                "4th level",
+                "5th level",
+                "6th level",
+                "7th level",
+                "8th level",
+                "9th level",
+                "cantrip",
+                "cantrips",
+                "level 1",
+                "level 2",
+                "level 3",
+                "level 4",
+                "level 5",
+                "level 6",
+                "level 7",
+                "level 8",
+                "level 9"
+            ]
+        }
+    ]
+}
