@@ -9,6 +9,7 @@ dependencies = [
     "fuzzywuzzy>=0.18.0",
     "nltk>=3.9.1",
     "numpy>=2.3.2",
+    "pip>=25.2",
     "python-levenshtein>=0.27.1",
     "rapidfuzz>=3.14.0",
     "sentence-transformers>=5.1.0",

@@ -3,16 +3,17 @@ import spacy
 
 class DataProcessor:
     def __init__(self, raw_spell_data_path, raw_entity_data_path, processed_spell_data_path, processed_entity_data_path):
-        print ("Loading raw data from:", raw_spell_data_path, raw_entity_data_path)
 
         with open(raw_spell_data_path, "r", encoding="utf-8") as f:
             self.spell_data = json.load(f)
         with open(raw_entity_data_path, "r", encoding="utf-8") as f:
             self.entity_data = json.load(f)
+            
         self.processed_spell_data_path = processed_spell_data_path
         self.processed_entity_data_path = processed_entity_data_path
         self.nlp = spacy.blank("en")
         self.nlp.add_pipe("sentencizer")
+        
 
     def process_spell_data(self):
         """Process raw spell data and extract the damage types from descriptions"""
@@ -21,8 +22,6 @@ class DataProcessor:
         for entity in self.entity_data.get("entities", []):
             if entity["label"] == "DAMAGE_TYPE":
                 damage_types.extend(entity["patterns"])
-
-        print ("Damage types found:", damage_types)
 
         # Process each spell description to find sentences mentioning damage types
         for spell in self.spell_data["spells"]:
@@ -33,15 +32,8 @@ class DataProcessor:
                 sentence_words = [token.text.lower() for token in sentence]
                 # Ignore sentences that mention resistances, immunities, or vulnerabilities
                 if not any(word in sentence_words for word in ["resistance", "immunity", "vulnerability"]):
-                    if (spell["name"] == "Chromatic Orb"):
-                        print("Sentence words:", sentence_words)
                     for damage_type in damage_types:
-                        
-                        if spell["name"] == "Chromatic Orb":
-                            print(f"Checking sentence: for damage type '{damage_type.lower()}'")
                         if damage_type.lower() in sentence_words:
-                            if spell["name"] == "Chromatic Orb":
-                                print(f"Found damage type '{damage_type}' in sentence: {sentence.text}")
                             # Found a damage type mention, add to processed data
                             # Ensure damageTypes is a list
                             if not spell.get("damageTypes"):
@@ -67,3 +59,4 @@ class DataProcessor:
         self.entity_data["entities"].append(spell_entity)
         with open(self.processed_entity_data_path, "w", encoding="utf-8") as f:
             json.dump(self.entity_data, f, indent=2)
+
