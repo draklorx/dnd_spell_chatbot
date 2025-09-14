@@ -2,10 +2,12 @@ from spacy import Language
 import spacy
 import json
 from .classifier_interface import ClassifierInterface
+import coreferee
 
 class EntityRuleClassifier(ClassifierInterface):
     def __init__(self, nlp: Language):
         self.nlp = nlp
+        self.nlp.add_pipe('coreferee')
 
     @staticmethod
     def train (entity_label_data_path):
@@ -34,6 +36,7 @@ class EntityRuleClassifier(ClassifierInterface):
                     pattern_tokens = [{"LOWER": word} for word in pattern.split()]
                 else:
                     pattern_tokens = [{"LOWER": pattern}]
+                print ("label", label, "pattern", pattern, "pattern_tokens", pattern_tokens)
                 patterns.append({"label": label, "pattern": pattern_tokens})
         return patterns
 

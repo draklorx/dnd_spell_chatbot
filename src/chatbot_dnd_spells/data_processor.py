@@ -54,7 +54,7 @@ class DataProcessor:
         }
 
         for spell in self.spell_data["spells"]:
-            spell_entity["patterns"].append(spell["name"])
+            spell_entity["patterns"].append(spell["name"].lower())
 
         self.entity_data["entities"].append(spell_entity)
         with open(self.processed_entity_data_path, "w", encoding="utf-8") as f:

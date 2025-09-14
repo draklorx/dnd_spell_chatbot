@@ -1,7 +1,7 @@
 from pathlib import Path
 from .spell_entity_classifier import SpellEntityClassifier
 from intents.assistant import Assistant
-from intents import IntentClassifier
+from intents.models import ModelData
 from intents.interfaces import ChatbotInterface
 from chatbot_dnd_spells.chatbot_config import ChatbotConfig
 from .spell_searcher import SpellSearcher
@@ -44,8 +44,7 @@ class Chatbot(ChatbotInterface):
     
     def load(self):
         print("Loading model...")
-        intent_classifier = IntentClassifier()
-        intent_classifier.load_model(self.config.model_path, self.config.model_data_path)
+        intent_classifier = ModelData.load_model(self.config.model_path, self.config.model_data_path)
 
         self.assistant = Assistant(
             intent_classifier,

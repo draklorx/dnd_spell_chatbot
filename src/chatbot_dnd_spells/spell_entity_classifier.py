@@ -23,6 +23,8 @@ class SpellEntityClassifier(EntityRuleClassifier):
     def predict(self, text):
         print("Predicting entities for text:", text)
         doc = self.nlp(text)
+        print(doc._.coref_chains)
+        print(doc._.coref_chains.resolve(doc[31])) # This would resolve 'they' in 'they loved'
         if doc is not None:
             results = []
             for ent in doc.ents:
