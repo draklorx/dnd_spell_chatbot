@@ -12,6 +12,7 @@ dependencies = [
     "rapidfuzz>=3.14.0",
     "sentence-transformers>=5.1.0",
     "spacy>=3.8.0",
+    "spaczz>=0.6.1",
     "sqlite-vec>=0.1.6",
     "torch>=2.8.0",
 ]

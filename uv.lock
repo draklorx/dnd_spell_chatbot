@@ -150,6 +150,7 @@ dependencies = [
     { name = "rapidfuzz" },
     { name = "sentence-transformers" },
     { name = "spacy" },
+    { name = "spaczz" },
     { name = "sqlite-vec" },
     { name = "torch" },
 ]
@@ -163,6 +164,7 @@ requires-dist = [
     { name = "rapidfuzz", specifier = ">=3.14.0" },
     { name = "sentence-transformers", specifier = ">=5.1.0" },
     { name = "spacy", specifier = ">=3.8.0" },
+    { name = "spaczz", specifier = ">=0.6.1" },
     { name = "sqlite-vec", specifier = ">=0.1.6" },
     { name = "torch", specifier = ">=2.8.0" },
 ]
@@ -1093,6 +1095,22 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/67/3d/926db774c9c98acf66cb4ed7faf6c377746f3e00b84b700d0868b95d0712/spacy-loggers-1.0.5.tar.gz", hash = "sha256:d60b0bdbf915a60e516cc2e653baeff946f0cfc461b452d11a4d5458c6fe5f24", size = 20811, upload-time = "2023-09-11T12:26:52.323Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/33/78/d1a1a026ef3af911159398c939b1509d5c36fe524c7b644f34a5146c4e16/spacy_loggers-1.0.5-py3-none-any.whl", hash = "sha256:196284c9c446cc0cdb944005384270d775fdeaf4f494d8e269466cfa497ef645", size = 22343, upload-time = "2023-09-11T12:26:50.586Z" },
+]
+
+[[package]]
+name = "spaczz"
+version = "0.6.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "catalogue" },
+    { name = "rapidfuzz" },
+    { name = "regex" },
+    { name = "spacy" },
+    { name = "srsly" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e7/1f/e0280e1b19062eeada003b18a6c733e5e6c9e651591d146f20bcaaaa7d9c/spaczz-0.6.1.tar.gz", hash = "sha256:7640e9ad67dea0f1ec7fdcd83a4f23b010f806f5bd9e40618069facf3f31337d", size = 48496, upload-time = "2024-03-12T01:17:51.738Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/de/12/cdec2198019503f909487ed703d4b018e9ec3cdf477c0ab6a297feccb47b/spaczz-0.6.1-py3-none-any.whl", hash = "sha256:65510b9e84d7b3752c16927099beaddc993e3a2fbd8df30f94274ddd8b9af597", size = 54251, upload-time = "2024-03-12T01:17:48.213Z" },
 ]
 
 [[package]]

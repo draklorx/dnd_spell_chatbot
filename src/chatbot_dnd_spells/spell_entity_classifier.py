@@ -1,4 +1,4 @@
-from entity_classification import EntityRuleClassifier
+from entity_recognition import EntityRuleClassifier
 
 class SpellEntityClassifier(EntityRuleClassifier):
     def _extract_key_value(self, text, label):
@@ -19,17 +19,3 @@ class SpellEntityClassifier(EntityRuleClassifier):
                 return "0"  # Cantrips are level 0
         # For other labels, return the original text
         return text
-    
-    def predict(self, text):
-        print("Predicting entities for text:", text)
-        doc = self.nlp(text)
-        print(doc._.coref_chains)
-        print(doc._.coref_chains.resolve(doc[31])) # This would resolve 'they' in 'they loved'
-        if doc is not None:
-            results = []
-            for ent in doc.ents:
-                key_value = self._extract_key_value(ent.text, ent.label_)
-                results.append((key_value, ent.label_))
-                print ("RESULT", ent.text, ent.label_, key_value)
-            return results
-        return []

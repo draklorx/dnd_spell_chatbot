@@ -47,3 +47,13 @@ Message: Give me a list of spells with a dexterity saving throw., Predicted Tag:
 Message: Give me a list of spells with a dexterity saving Throw., Predicted Tag: range, Confidence: 0.6940386891365051
 Message: Give me a list of spells with a dexterity saving Thow., Predicted Tag: range, Confidence: 0.6401735544204712
 Message: Give me a list of level 3 fire spells for the wizard class., Predicted Tag: classes, Confidence: 0.4204106330871582
+Message: Show me spells with a strengh saving throw., Predicted Tag: info, Confidence: 0.48242348432540894
+Message: Show me spells with a strengh saving throw., Predicted Tag: info, Confidence: 0.48242348432540894
+Message: Show me spells with a strengh saving throw., Predicted Tag: info, Confidence: 0.48242348432540894
+Message: Show me spells with a strengh saving throw., Predicted Tag: info, Confidence: 0.48242348432540894
+Message: What spells have a strength saving throw?, Predicted Tag: level, Confidence: 0.37633439898490906
+Message: What spells have a stren saving throw?, Predicted Tag: level, Confidence: 0.37633439898490906
+Message: Is fireball a fire spell?, Predicted Tag: level, Confidence: 0.5337286591529846
+Message: Is acid splash an acid spell?, Predicted Tag: level, Confidence: 0.5337286591529846
+Message: Is acidsplash an acid spell?, Predicted Tag: level, Confidence: 0.5337286591529846
+Message: quit, Predicted Tag: info, Confidence: 0.3971969783306122
