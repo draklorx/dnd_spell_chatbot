@@ -402,17 +402,17 @@
       "duration": "up to 1 minute",
       "description": "You touch a willing creature and choose a damage type: Acid, Bludgeoning, Cold, Fire, Lightning, Necrotic, Piercing, Poison, Radiant, Slashing, or Thunder. When the creature takes damage of the chosen type before the spell ends, the creature reduces the total damage taken by 1d4. A creature can benefit from this spell only once per turn.",
       "damageTypes": [
-        "lightning",
         "fire",
         "poison",
         "necrotic",
         "thunder",
-        "piercing",
-        "cold",
+        "bludgeoning",
         "radiant",
-        "slashing",
         "acid",
-        "bludgeoning"
+        "piercing",
+        "slashing",
+        "lightning",
+        "cold"
       ]
     },
     {
@@ -503,13 +503,13 @@
       "description": "You cast sorcerous energy at one creature or object within range. Make a ranged attack roll against the target. On a hit, the target takes 1d8 damage of a type you choose: Acid, Cold, Fire, Lightning, Poison, Psychic, or Thunder. \n\nIf you roll an 8 on a d8 for this spell, you can roll another d8, and add it to the damage. When you cast this spell, the maximum number of these d8s you can add to the spell's damage equals your spellcasting ability modifier.",
       "cantripUpgrade": "This damage increases by 1d8 when you reach level 5 (2d8), 11 (3d8), and 17 (4d8).",
       "damageTypes": [
-        "lightning",
-        "psychic",
         "fire",
         "poison",
         "thunder",
+        "acid",
+        "lightning",
         "cold",
-        "acid"
+        "psychic"
       ]
     },
     {
@@ -572,8 +572,8 @@
       "duration": "Up to 1 minute",
       "description": "You manifest a minor wonder within range. You create one of the effects below within range. If you cast this spell multiple times, you can have up to three of its 1-minute effects active at a time. \n\n**Altered Eyes**. You alter the appearance of your eyes for 1 minute. \n\n**Booming Voice**. Your voice booms up to three times as loud as normal for 1 minute. For the duration, you have Advantage on Charisma (Intimidation) checks. \n\n**Fire Play**. You cause flames to flicker, brighten, dim, or change color for 1 minute. \n\n**Invisible Hand**. You instantaneously cause an unlocked door or window to fly open or slam shut. \n\n**Phantom Sound**. You create an instantaneous sound that originates from a point of your choice within range, such as a rumble of thunder, the cry of a raven, or ominous whispers. \n\n**Tremors**. You cause harmless tremors in the ground for 1 minute.",
       "damageTypes": [
-        "thunder",
-        "fire"
+        "fire",
+        "thunder"
       ]
     },
     {
@@ -781,12 +781,12 @@
       "description": "You hurl an orb of energy at a target within range. Choose Acid, Cold, Fire, Lightning, Poison, or Thunder for the type of orb you create, and then make a ranged spell attack against the target. On a hit, the target takes 3d8 damage of the chosen type. If you roll the same number on two or more of the d8s, the orb leaps to a different target of your choice within 30 feet of the target. Make an attack roll against the new target, and make a new damage roll. The orb can't leap again unless you cast the spell with a level 2+ spell slot.",
       "higherLevelSlot": "The damage increases by 1d8 for each spell slot level above 1. The orb can leap a maximum number of times equal to the level of the slot expended, and a creature can be targeted only once by each casting of this spell.",
       "damageTypes": [
-        "lightning",
         "fire",
         "poison",
         "thunder",
-        "cold",
-        "acid"
+        "acid",
+        "lightning",
+        "cold"
       ]
     },
     {
@@ -2191,11 +2191,11 @@
       "description": "You touch one willing creature, and choose Acid, Cold, Fire, Lightning, or Poison. Until the spell ends, the target can take a Magic action to exhale a 15-foot Cone. Each creature in that area makes a Dexterity saving throw, taking 3d6 damage of the chosen type on a failed save or half as much damage on a successful one.",
       "higherLevelSlot": "The damage increases by 1d6 for each spell slot level above 2.",
       "damageTypes": [
-        "lightning",
         "fire",
         "poison",
-        "cold",
-        "acid"
+        "acid",
+        "lightning",
+        "cold"
       ]
     },
     {
@@ -3305,8 +3305,8 @@
       "description": "You conjure nature spirits that appear as a Large pack of spectral, intangible animals in an unoccupied space you can see within range. The pack lasts for the duration, and you choose the spirits' animal form, such as wolves, serpents, or birds. \n\nYou have Advantage on Strength saving throws while you're within 5 feet of the pack, and when you move on your turn, you can also move the pack up to 30 feet to an unoccupied space you can see. Whenever the pack moves within 10 feet of a creature you can see and whenever a creature you can see enters a space within 10 feet of the pack or ends its turn there, you can force that creature to make a Dexterity saving throw. On a failed save, the creature takes 3d10 Slashing damage. A creature makes this save only once per turn.",
       "higherLevelSlot": "The damage increases by 1d10 for each spell slot level above 3.",
       "damageTypes": [
-        "force",
-        "slashing"
+        "slashing",
+        "force"
       ]
     },
     {
@@ -3514,11 +3514,11 @@
       "description": "You inscribe it either on a surface (such as a table or a section of floor) or within an object that can be closed (such as a book or chest) to conceal the glyph. The glyph can cover an area no larger than 10 feet in diameter. If the surface or object is moved more than 10 feet from where you cast this spell, the glyph is broken, and the spell ends without being triggered. The glyph is nearly imperceptible and requires a successful Wisdom (Perception) check against your spell save DC to notice. When you inscribe the glyph, you set its trigger and choose whether it's an explosive rune or a spell glyph, as explained below. \n\n**Set the Trigger.** You decide what triggers the glyph when you cast the spell. For glyphs inscribed on a surface, common triggers include touching or stepping on the glyph, removing another object covering it, or approaching within a certain distance of it. For glyphs inscribed within an object, common triggers include opening that object or seeing the glyph. Once a glyph is triggered, this spell ends. You can refine the trigger so that only creatures of certain types activate it (for example, the glyph could be set to affect Aberrations). You can also set conditions for creatures that don't trigger the glyph, such as those who say a certain password. \n\n**Explosive Rune.** When triggered, the glyph erupts with magical energy in a 20-foot-radius Sphere centered on the glyph. Each creature in the area makes a Dexterity saving throw. A creature takes 5d8 Acid, Cold, Fire, Lightning, or Thunder damage (your choice when you create the glyph) on a failed save or half as much damage on a successful one. \n\n**Spell Glyph.** You can store a prepared spell of level 3 or lower in the glyph by casting it as part of creating the glyph. The spell must target a single creature or an area. The spell being stored has no immediate effect when cast in this way. When the glyph is triggered, the stored spell takes effect. If the spell has a target, it targets the creature that triggered the glyph. If the spell affects an area, the area is centered on that creature. If the spell summons Hostile creatures or creates harmful objects or traps, they appear as close as possible to the intruder and attack it. If the spell requires Concentration, it lasts until the end of its full duration.",
       "higherLevelSlot": "The damage of an explosive rune increases by 1d8 for each spell slot level above 3. If you create a spell glyph, you can store any spell of up to the same level as the spell slot you use for the Glyph of Warding.",
       "damageTypes": [
-        "lightning",
         "fire",
         "thunder",
-        "cold",
-        "acid"
+        "acid",
+        "lightning",
+        "cold"
       ]
     },
     {
@@ -4279,10 +4279,10 @@
       "description": "You conjure spirits from the Elemental Planes that flit around you in a 15-foot Emanation for the duration. Until the spell ends, any attack you make deals an extra 2d8 damage when you hit a creature in the Emanation. This damage is Acid, Cold, Fire, or Lightning (your choice when you make the attack). In addition, the ground in the Emanation is Difficult Terrain for your enemies.",
       "higherLevelSlot": "The damage increases by 2d8 for each spell slot level above 4.",
       "damageTypes": [
-        "lightning",
+        "fire",
         "acid",
         "cold",
-        "fire"
+        "lightning"
       ]
     },
     {
@@ -5069,11 +5069,11 @@
       "description": "You conjure a Large, intangible spirit from the Elemental Planes that appears in an unoccupied space within range. Choose the spirit's element, which determines its damage type: air (Lightning), earth (Thunder), fire (Fire), or water (Cold). The spirit lasts for the duration. \n\nWhenever a creature you can see enters the spirit's space or starts its turn within 5 feet of the spirit, you can force that creature to make a Dexterity saving throw if the spirit has no creature Restrained. On failed save, the target takes 8d8 damage of the spirit's type, and the target has the Restrained condition until the spell ends. At the start of each of its turns, the Restrained target repeats the save. On a failed save, the target takes 4d8 damage of the spirit's type. On a successful save, the target isn't Restrained by the spirit.",
       "higherLevelSlot": "The damage increases by 2d8 for each spell slot level above 5.",
       "damageTypes": [
-        "lightning",
         "fire",
         "thunder",
-        "cold",
-        "force"
+        "force",
+        "lightning",
+        "cold"
       ]
     },
     {
@@ -6688,11 +6688,11 @@
       "duration": "Instantaneous",
       "description": "Eight rays of light flash from you in a 60-foot Cone. Each creature in the Cone makes a Dexterity saving throw. For each target, roll 1d8 to determine which color ray affects it, consulting the Prismatic Rays table.\n\n1d8 Ray \n\n1     Red. Failed Save: 12d6 Fire damage. Successful Save: Half as much damage. \n\n2     Orange. Failed Save: 12d6 Acid damage. Successful Save: Half as much damage. \n\n3 Yellow. Failed Save: 12d6 Lightning damage. Successful Save: Half as much damage. \n\n4    Green. Failed Save: 12d6 Poison damage. Successful Save: Half as much damage. \n\n5    Blue. Failed Save: 12d6 Cold damage. Successful Save: Half as much damage. \n\n6    Indigo. Failed Save: The target has the Restrained condition and makes a Constitution saving throw at the end of each of its turns. If it successfully saves three times, the condition ends. If it fails three times, it has the Petrified condition until it is freed by an effect like the Greater Restoration spell. The successes and failures needn't be consecutive; keep track of both until the target collects three of a kind. \n\n7    Violet. Failed Save: The target has the Blinded condition and makes a Wisdom saving throw at the start of your next turn. On a Successful Save, the condition ends. On a Failed Save, the condition ends, and the creature teleports to another plane of existence (DM's choice). \n\n8    Special. The target is struck by two rays. Roll twice, rerolling any 8.",
       "damageTypes": [
-        "lightning",
         "fire",
         "poison",
-        "cold",
-        "acid"
+        "acid",
+        "lightning",
+        "cold"
       ]
     },
     {
@@ -7433,12 +7433,12 @@
       "duration": "10 minutes",
       "description": "A shimmering, multicolored plane of light forms a vertical opaque wall\u2014up to 90 feet long, 30 feet high, and 1 inch thick\u2014centered on a point within range. Alternatively, you shape the wall into a globe up to 30 feet in diameter centered on a point within range. The wall lasts for the duration. If you position the wall in a space occupied by a creature, the spell ends instantly without effect. The wall sheds Bright Light within 100 feet and Dim Light for an additional 100 feet. You and creatures you designate when you cast the spell can pass through and be near the wall without harm. If another creature that can see the wall moves within 20 feet of it or starts its turn there, the creature must succeed on a Constitution saving throw or have the Blinded condition for 1 minute. \n\nThe wall consists of seven layers, each with a different color. When a creature reaches into or passes through the wall, it does so one layer at a time through all the layers. Each layer forces the creature to make a Dexterity saving throw or be affected by that layer's properties as described in the Prismatic Layers table. \n\nThe wall, which has AC 10, can be destroyed one layer at a time, in order from red to violet, by means specific to each layer. If a layer is destroyed, it is gone for the duration. Antimagic Field has no effect on the wall, and Dispel Magic can affect only the violet layer. \n\n| Order | Effects                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |\n| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |\n| 1     | **Red.** Failed Save: 12d6 Fire damage. Successful Save: Half as much damage. Additional Effects: Nonmagical ranged attacks can't pass through this layer, which is destroyed if it takes at least 25 Cold damage.                                                                                                                                                                                                                                                                                                                                                        |\n| 2     | **Orange**. Failed Save: 12d6 Acid damage. Successful Save: Half as much damage. Additional Effects: Magical ranged attacks can't pass through this layer, which is destroyed by a strong wind (such as the one created by Gust of Wind).                                                                                                                                                                                                                                                                                                                                 |\n| 3     | **Yellow**. Failed Save: 12d6 Lightning damage. Successful Save: Half as much damage. Additional Effects: The layer is destroyed if it takes at least 60 Force damage.                                                                                                                                                                                                                                                                                                                                                                                                    |\n| 4     | **Green**. Failed Save: 12d6 Poison damage. Successful Save: Half as much damage. Additional Effects: A Passwall spell, or another spell of equal or greater level that can open a portal on a solid surface, destroys this layer.                                                                                                                                                                                                                                                                                                                                        |\n| 5     | **Blue**. Failed Save: 12d6 Cold damage. Successful Save: Half as much damage. Additional Effects: The layer is destroyed if it takes at least 25 Fire damage.                                                                                                                                                                                                                                                                                                                                                                                                            |\n| 6     | **Indigo**. Failed Save: The target has the Restrained condition and makes a Constitution saving throw at the end of each of its turns. If it successfully saves three times, the condition ends. If it fails three times, it has the Petrified condition until it is freed by an effect like the Greater Restoration spell. The successes and failures needn't be consecutive; keep track of both until the target collects three of a kind. Additional Effects: Spells can't be cast through this layer, which is destroyed by Bright Light shed by the Daylight spell. |\n| 7     | **Violet**. Failed Save: The target has the Blinded condition and makes a Wisdom saving throw at the start of your next turn. On a Successful Save, the condition ends. On a Failed Save, the condition ends, and the creature teleports to another plane of existence (DM's choice). Additional Effects: This layer is destroyed by Dispel Magic.                                                                                                                                                                                                                        |.",
       "damageTypes": [
-        "lightning",
         "fire",
         "poison",
-        "cold",
+        "acid",
         "force",
-        "acid"
+        "lightning",
+        "cold"
       ]
     },
     {
@@ -7480,11 +7480,11 @@
       "duration": "up to 1 minute",
       "description": "A churning storm cloud forms for the duration, centered on a point within range and spreading to a radius of 300 feet. Each creature under the cloud when it appears must succeed on a Constitution saving throw or take 2d6 Thunder damage and have the Deafened condition for the duration. \n\nAt the start of each of your later turns, the storm produces different effects, as detailed below. \n\n**Turn 2**. Acidic rain falls. Each creature and object under the cloud takes 4d6 Acid damage. \n\n**Turn 3**. You call six bolts of lightning from the cloud to strike six different creatures or objects beneath it. Each target makes a Dexterity saving throw, taking 10d6 Lightning damage on a failed save or half as much damage on a successful one. \n\n**Turn 4**. Hailstones rain down. Each creature under the cloud takes 2d6 Bludgeoning damage. \n\n**Turns 5-10**. Gusts and freezing rain assail the area under the cloud. Each creature there takes 1d6 Cold damage. Until the spell ends, the area is Difficult Terrain and Heavily Obscured, ranged attacks with weapons are impossible there, and strong wind blows through the area.",
       "damageTypes": [
-        "lightning",
         "thunder",
-        "cold",
+        "bludgeoning",
         "acid",
-        "bludgeoning"
+        "lightning",
+        "cold"
       ]
     },
     {

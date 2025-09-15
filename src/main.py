@@ -21,7 +21,6 @@ if __name__ == "__main__":
             print("The model is out of date. Train it by running train.py")
             exit()
         else:
-            print("Loading existing model...")
             chatbot.load()
     except Exception as e:
         print(f"Error occurred during initialization: {e}")

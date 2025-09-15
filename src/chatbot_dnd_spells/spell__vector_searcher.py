@@ -93,7 +93,7 @@ class SpellVectorSearcher(VectorSearcher):
                 print(f"{YELLOW}score: {result.similarity_score:.3f} - {result.chunk_context}{RESET}")
 
         if not results:
-            return "No relevant information found."
+            return None
         
         # Sort by source original sentence order
         results.sort(key=lambda x: (x.position))

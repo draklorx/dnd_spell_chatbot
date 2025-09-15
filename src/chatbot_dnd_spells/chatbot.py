@@ -9,6 +9,7 @@ from .spell__vector_searcher import SpellVectorSearcher
 from coreference_resolution import ChatContext
 from coreference_resolution.coreference_resolver import CoreferenceResolver
 from entity_recognition import Prediction
+from utils.colors import YELLOW, RESET
 import re
 
 class Chatbot(ChatbotInterface):
@@ -21,6 +22,7 @@ class Chatbot(ChatbotInterface):
         self.entity_classifier = SpellEntityClassifier(self.config.processed_entity_label_data_path)
         self.chat_context = ChatContext()
         self.coreference_resolver = CoreferenceResolver(self.chat_context)
+        self.debug = False
 
     def substitute_spell_data(self, response: str) -> str:
         """Substitute entity placeholders found in the response with values from spell data"""
@@ -126,11 +128,10 @@ class Chatbot(ChatbotInterface):
                 self.chat_context.clear_contexts()
                 predictions = self.entity_classifier.predict(message)
                 for prediction in predictions:
-                    if prediction.confidence >= 80:
-                        if prediction.label != "LEVEL":
-                            self.chat_context.update_context(prediction)
-                        elif (prediction.confidence >= 90):
-                            self.chat_context.update_context(prediction)
+                    if prediction.confidence >= 85:
+                        if self.debug:
+                            print(f"{YELLOW}Entity: {prediction.label}, Value: {prediction.value}, Confidence: {prediction.confidence}{RESET}")
+                        self.chat_context.update_context(prediction)
 
             # Determine if we're querying for a spell list
             if predicted_intent == "query_spells":
@@ -149,17 +150,18 @@ class Chatbot(ChatbotInterface):
                     response = response.strip()  # Remove trailing newline
             else:
                 spell = self.chat_context.get_context("SPELL")
-                if spell is None or spell.confidence < 80:
+                if spell is None or spell.confidence < 85:
                     if not predicted_intent:
                         response = "I'm not sure what you mean. Could you please rephrase?"
                         self.assistant.write_exception(message, predicted_intent, confidence)
                     else:
                         response = "I'm sorry, I can't find that spell in my grimoire. Could you try again?"
-                elif spell.confidence < 90:
-                    response = f"I couldn't find that spell in my grimoire. Did you mean {spell.value}?"
                 else:
                     if not predicted_intent:
                         response = self.vector_searcher.search(message, spell.value, rec_score=0.45, min_score=0.5, max_results=3)
+                        if not response:
+                            response = "I'm not sure what you mean. Could you please rephrase?"
+                            self.assistant.write_exception(message, predicted_intent, confidence)
                     else:
                         response = self.substitute_spell_data(response)
 

@@ -3,6 +3,7 @@ import random
 import torch
 import torch.nn.functional as F
 from .utils.data_preprocessor import DataPreprocessor
+from utils.colors import YELLOW, RESET
 
 class Assistant:
     def __init__(self, model, exceptions_path):
@@ -28,12 +29,13 @@ class Assistant:
         predicted_class_index = torch.argmax(probabilities, dim=1).item()
         predicted_intent = self.model_data.intents[predicted_class_index]
 
-        if self.debug:
-            print(f"Predicted Intent: {predicted_intent}, Confidence: {confidence}")
 
         # Only respond if confidence is high enough
         if confidence < 0.8 or predicted_intent == "none":
             return (None, "", confidence)
+        
+        if self.debug:
+            print(f"{YELLOW}Predicted Intent: {predicted_intent}, Confidence: {confidence}{RESET}")
 
         # Generate response with entity substitution
         if self.model_data.intents_responses[predicted_intent]:

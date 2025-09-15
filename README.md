@@ -64,7 +64,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-Before you begin you should run the trainer to setup the db and run the training
+Before you begin you should run the trainer to setup the db and run the training. NOTE: It can take a long time to kick off the trainer on the first run. For your first time you should select "a" for run all training. This process will take a couple of minutes.
 
 ```bash
 # Using uv

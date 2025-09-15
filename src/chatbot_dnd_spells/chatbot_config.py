@@ -20,9 +20,9 @@ class ChatbotConfig():
         self.processed_entity_label_data_path = self.processed_data_dir / 'entities.json'
 
 
-        artifacts_dir = base_dir / 'artifacts'
-        self.entity_classifier_model_path = artifacts_dir / 'entity_classifier_model'
-        self.spells_db_path = artifacts_dir / 'spells.db'
-        self.model_data_path = artifacts_dir / 'model_data.json'
-        self.model_path = artifacts_dir / 'intent_model'
+        self.artifacts_dir = base_dir / 'artifacts'
+        self.entity_classifier_model_path = self.artifacts_dir / 'entity_classifier_model'
+        self.spells_db_path = self.artifacts_dir / 'spells.db'
+        self.model_data_path = self.artifacts_dir / 'model_data.json'
+        self.model_path = self.artifacts_dir / 'intent_model'
 
