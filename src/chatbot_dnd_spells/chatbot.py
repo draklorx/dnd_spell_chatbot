@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from .spell_entity_classifier import SpellEntityClassifier
 from intents.assistant import Assistant
@@ -43,6 +44,12 @@ class Chatbot(ChatbotInterface):
             elif key == "casting_time":
                 casting_time = spell_data.get("castingTime", "")
                 value = casting_time if casting_time else spell_data.get("actionType", "")
+            elif key == "damage_types":
+                damage_types = spell_data.get("damageTypes", [])
+                # If no damage types, indicate the spell does not deal damage
+                # This is kind of a hack and requires that the intent response be worded correctly
+                # e.g., "The spell does {damage_types} damage." -> "The spell does not do damage."
+                value = ", ".join(damage_types) if damage_types else "not do" 
             else:
                 raise ValueError(f"Unknown placeholder '{key}' in response.")
 
@@ -65,6 +72,26 @@ class Chatbot(ChatbotInterface):
         )
 
         self.vector_searcher = SpellVectorSearcher(self.config.spells_db_path)
+
+    def fetch_spell_list(self):
+        """Fetch a list of spells based on current context (e.g., class, level, damage_type, and school)"""
+        # Now use the criteria to fetch the spell list
+        with open(self.config.processed_spell_data_path, 'r', encoding='utf-8') as f:
+            filtered_spells = json.load(f).get('spells', [])
+
+        if self.chat_context.get_context("CLASS"):
+            filtered_spells = [spell for spell in filtered_spells if self.chat_context.get_context("CLASS").value in spell.get("classes", [])]
+        if self.chat_context.get_context("LEVEL"):
+            filtered_spells = [spell for spell in filtered_spells if self.chat_context.get_context("LEVEL").value == spell.get("level")]
+        if self.chat_context.get_context("DAMAGE_TYPE"):
+            filtered_spells = [spell for spell in filtered_spells if self.chat_context.get_context("DAMAGE_TYPE").value in spell.get("damageTypes", [])]
+        if self.chat_context.get_context("SCHOOL"):
+            filtered_spells = [spell for spell in filtered_spells if self.chat_context.get_context("SCHOOL").value == spell.get("school")]
+
+        # sort by level and then alphabetically
+        filtered_spells.sort(key=lambda x: (x.get("level", 0), x.get("name", "")))
+
+        return filtered_spells
 
     def run(self):
         print("Welcome to the DnD Spell Chatbot!")
@@ -92,7 +119,7 @@ class Chatbot(ChatbotInterface):
                 resolved_prediction = Prediction(entity_type, entity_value, 95.0)  # High confidence for resolved entities
                 self.chat_context.update_context(resolved_prediction)
 
-            predicted_intent, response = self.assistant.process_message(message)
+            predicted_intent, response, confidence = self.assistant.process_message(message)
 
             # Extract spell entities if this intent requires entity recognition (only if no coreferences were resolved)
             if not resolved_entities:
@@ -106,14 +133,26 @@ class Chatbot(ChatbotInterface):
                             self.chat_context.update_context(prediction)
 
             # Determine if we're querying for a spell list
-            if predicted_intent == "spell_query":
-                # TODO implement spell list querying
-                pass
+            if predicted_intent == "query_spells":
+                #TODO This still needs work to handle multiple criteria
+                filtered_spells = self.fetch_spell_list()
+                if not filtered_spells:
+                    response = "I couldn't find any spells matching your criteria."
+                else:
+                    last_level = None
+                    for spell in filtered_spells:
+                        if spell["level"] != last_level:
+                            level_name = "Cantrips" if spell["level"] == 0 else f"Level {spell['level']}"
+                            response += f"\n{level_name}:\n"
+                            last_level = spell["level"]
+                        response += f"- {spell['name']}\n"
+                    response = response.strip()  # Remove trailing newline
             else:
                 spell = self.chat_context.get_context("SPELL")
                 if spell is None or spell.confidence < 80:
                     if not predicted_intent:
                         response = "I'm not sure what you mean. Could you please rephrase?"
+                        self.assistant.write_exception(message, predicted_intent, confidence)
                     else:
                         response = "I'm sorry, I can't find that spell in my grimoire. Could you try again?"
                 elif spell.confidence < 90:

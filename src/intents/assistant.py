@@ -8,6 +8,7 @@ class Assistant:
     def __init__(self, model, exceptions_path):
         self.model_data = model
         self.exceptions_path = exceptions_path
+        self.debug = False
 
     def write_exception(self, input_message, predicted_tag, confidence):
         with open(self.exceptions_path, "a") as f:
@@ -27,13 +28,15 @@ class Assistant:
         predicted_class_index = torch.argmax(probabilities, dim=1).item()
         predicted_intent = self.model_data.intents[predicted_class_index]
 
+        if self.debug:
+            print(f"Predicted Intent: {predicted_intent}, Confidence: {confidence}")
+
         # Only respond if confidence is high enough
-        if confidence < 0.8:
-            self.write_exception(input_message, predicted_intent, confidence)
-            return (None, "I'm not sure what you mean. Can you rephrase?")
+        if confidence < 0.8 or predicted_intent == "none":
+            return (None, "", confidence)
 
         # Generate response with entity substitution
         if self.model_data.intents_responses[predicted_intent]:
-            return (predicted_intent, random.choice(self.model_data.intents_responses[predicted_intent]))
+            return (predicted_intent, random.choice(self.model_data.intents_responses[predicted_intent]), confidence)
 
-        return (None, "I'm not sure how to respond to that.")
+        return (None, "", confidence)

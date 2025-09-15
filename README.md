@@ -18,35 +18,23 @@ Code originally sourced from NeuralNine's [`Youtube`](https://www.youtube.com/wa
 dnd_spell_chatbot/
 ├── src/
 │   ├── main.py                       # Main application entry point
-│   ├── chatbot_core/                 # Core chatbot framework
-│   │   ├── __init__.py
-│   │   ├── assistant.py              # Handles processing user messages and exceptions
-│   │   ├── chatbot_interface.py      # Interface definition for chatbots
-│   │   ├── data_preprocessor.py      # Text preprocessing utilities
-│   │   ├── intent_classifier.py      # Intent classification logic
-│   │   ├── model_data.py             # Model data management
-│   │   ├── ner_interface.py          # Interface for named entity recognition
-│   │   └── trainer.py                # Model training functionality
-│   ├── dnd_spell_chatbot/            # D&D specific implementation
+│   ├── train.py                      # Model training script
+│   ├── chatbot_dnd_spells/           # D&D specific implementation
 │   │   ├── __init__.py
 │   │   ├── chatbot.py                # D&D specific chatbot implementation
-│   │   ├── spell_ner.py              # Spell name entity recognition
-│   │   ├── artifacts/                # Generated model files
-│   │   │   ├── chatbot_model.pth     # Trained PyTorch model (generated)
-│   │   │   └── model_data.json       # Saved model data so we don't have to rebuild it (generated)
-│   │   ├── data/                     # Training and reference data
-│   │   │   ├── intents.json          # Training data with patterns and responses
-│   │   │   └── spells.json           # D&D spell information database
-│   │   └── logs/                     # Application logs directory
-│   │       └── exceptions.log        # Low confidence message log
-│   │       └── exceptions.log        # Low confidence message log
-|   └── embeddings/                   # Vector DB code
-|       ├── db_queries.py             # Queries for querying the sqlite vector DB
-|       ├── db_setup.py               # DB Connection and setup
-|       ├── embedder.py               # Embedding generation and storage in the DB
-|       ├── vector_searcher.py        # Vector DB querying
+│   │   ├── chatbot_config.py         # Configuration settings
+│   │   ├── chatbot_trainer.py        # Training functionality
+│   │   ├── data_processor.py         # Data processing utilities
+│   │   ├── spell__vector_searcher.py # Vector search for spells
+│   │   └── spell_entity_classifier.py # Spell entity classification
+│   ├── coreference_resolution/       # Coreference resolution module
+│   ├── embeddings/                   # Vector DB code
+│   ├── entity_recognition/           # Entity recognition module
+│   ├── intents/                      # Intent classification module
+│   └── utils/                        # Utility functions
 ├── pyproject.toml                    # Project dependencies and configuration
 ├── uv.lock                           # Dependency lock file
+├── requirements.txt                  # Python dependencies
 └── README.md                         # This file
 ```
 
@@ -121,21 +109,21 @@ You can then begin asking about D&D spells. Try phrases like:
 
 ## Training Data
 
-The bot is trained on D&D spell-focused conversation patterns defined in [`src/dnd_spell_chatbot/data/intents.json`](src/dnd_spell_chatbot/data/intents.json), including:
+The bot is trained on D&D spell-focused conversation patterns defined in training data files, including:
 
 -   **Spell Information**: A complete rundown of the spell
 -   **Specific Spell Details**: Answering specific questions about the spell like casting time, range, or level
 
-The spell information is retrieved from [`src/dnd_spell_chatbot/data/spells.json`](src/dnd_spell_chatbot/data/spells.json) which contains a comprehensive database of D&D spells. This data was sourced from [`dmcb / srd-5.2-spells.json`](https://gist.github.com/dmcb/4b67869f962e3adaa3d0f7e5ca8f4912)
+The spell information is retrieved from spell database files which contain a comprehensive database of D&D spells.
 
 ## Model Architecture
 
-The chatbot uses a neural network implemented in [`ChatbotModel`](src/chatbot_core/chatbot_model.py) with:
+The chatbot uses a neural network with:
 
 -   Input layer for bag-of-words representation
 -   Hidden layers with ReLU activation and dropout for regularization
 -   Output layer for intent classification
--   Trained weights automatically saved to [`src/dnd_spell_chatbot/artifacts/chatbot_model.pth`](src/dnd_spell_chatbot/artifacts/chatbot_model.pth)
+-   Trained weights automatically saved to model files
 
 ## Confidence Threshold
 

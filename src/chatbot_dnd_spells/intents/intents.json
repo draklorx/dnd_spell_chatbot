@@ -15,6 +15,29 @@
             ]
         },
         {
+            "tag": "query_spells",
+            "patterns": [
+                "List all {criteria} spells",
+                "What are some {criteria} spells?",
+                "Show me {criteria} spells",
+                "Give me a list of {criteria} spells",
+                "What are some other {criteria} spells?",
+
+                "List all {criteria} {criteria} spells",
+                "What are some {criteria} {criteria} spells?",
+                "Show me {criteria} {criteria} spells",
+                "Give me a list of {criteria} {criteria} spells",
+                "What are some other {criteria} {criteria} spells?",
+
+                "List all {criteria} {criteria} {criteria} spells",
+                "What are some {criteria} {criteria} {criteria} spells?",
+                "Show me {criteria} {criteria} {criteria} spells",
+                "Give me a list of {criteria} {criteria} {criteria} spells",
+                "What are some other {criteria} {criteria} {criteria} spells?"
+            ],
+            "responses": ["Here is the list of spells matching your criteria:"]
+        },
+        {
             "tag": "level",
             "patterns": [
                 "What level is {name}?",
@@ -26,6 +49,18 @@
                 "{name} is level {level}.",
                 "{name} is a level {level} spell."
             ]
+        },
+        {
+            "tag": "damage_type",
+            "patterns": [
+                "What is the damage type of {name}?",
+                "What type of damage does {name} deal?",
+                "What is {name} damage type?",
+                "What kind of damage does {name} do?",
+                "What is its damage type?",
+                "and its damage type?"
+            ],
+            "responses": ["{name} does {damage_types} damage."]
         },
         {
             "tag": "school",
@@ -109,6 +144,14 @@
                 "{name} can be cast by: {classes}.",
                 "The following classes have access to {name}: {classes}."
             ]
+        },
+        {
+            "tag": "none",
+            "patterns": [
+                "What is the damage for {name}?",
+                "How much damage does {name} do?"
+            ],
+            "responses": []
         }
     ]
 }
