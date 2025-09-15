@@ -23,8 +23,7 @@ class ChatbotTrainer(ChatbotTrainerInterface):
             self.config.processed_spell_data_path,
             self.config.processed_entity_label_data_path
         )
-        processor.process_entity_data()
-        processor.process_spell_data()
+        processor.process_data()
         print("Data preprocessing complete.")
 
     def train_intents(self):
@@ -71,7 +70,6 @@ class ChatbotTrainer(ChatbotTrainerInterface):
             print ("1. Data Preprocessing")
             print ("2. Intent Classifier")
             print ("3. Spell Embeddings")
-            print ("4. Entity Classifier")
             print ("A. All of the above")
             print ("Q. Quit")
             choice = input("You: ").strip()
@@ -81,13 +79,10 @@ class ChatbotTrainer(ChatbotTrainerInterface):
                 self.train_intents()
             elif choice == '3':
                 self.train_spell_embeddings()
-            elif choice == '4':
-                self.train_entity_classifier()
             elif choice.lower() == 'a':
                 self.preprocess_data()
                 self.train_intents()
                 self.train_spell_embeddings()
-                self.train_entity_classifier()
             elif choice.lower() == 'q':
                 print("Exiting training.")
                 exit()

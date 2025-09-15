@@ -1,3 +1,4 @@
+from embeddings.data_classes import ChunkResult
 from .db_queries import get_embeddings_for_entry
 from .embedder import Embedder
 
@@ -27,16 +28,8 @@ class VectorSearcher:
         # Search within specific entry
         results = get_embeddings_for_entry(self.embedder.conn, query_embedding, entry_name, top_k)
 
-        # TODO Add debug mode
-        if self.debug:
-            print(f"Raw results (distance order) for entry '{entry_name}': {query}")
-            for result in results:
-                text, chunk_text, position, distance = result
-                similarity = 1 - distance
-                print(f"[similarity: {similarity:.3f}] {chunk_text}")
-        
         # Convert to similarity scores
-        similarity_results = [(text, position, 1 - distance) for text, chunk_text, position, distance in results]
+        similarity_results = [ChunkResult(chunk_text=chunk_text, chunk_context=text, position=position, similarity_score=1 - distance) for text, chunk_text, position, distance in results]
         return similarity_results
     
     def close(self):

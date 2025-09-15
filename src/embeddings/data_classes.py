@@ -19,3 +19,10 @@ class ChunkContext:
 class ChunkedEntry:
     name: str
     chunk_contexts: list[ChunkContext]
+
+@dataclass
+class ChunkResult:
+    chunk_text: str
+    chunk_context: str
+    position: int
+    similarity_score: float

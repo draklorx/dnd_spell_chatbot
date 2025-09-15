@@ -4,7 +4,8 @@ from intents.assistant import Assistant
 from intents.models import ModelData
 from intents.interfaces import ChatbotInterface
 from chatbot_dnd_spells.chatbot_config import ChatbotConfig
-from .spell_searcher import SpellSearcher
+from .spell__vector_searcher import SpellVectorSearcher
+from coreference_resolution import ChatContext
 import re
 
 class Chatbot(ChatbotInterface):
@@ -14,27 +15,31 @@ class Chatbot(ChatbotInterface):
         current_dir = Path(__file__).parent
         self.config = ChatbotConfig(current_dir)
         self.function_mappings = {}
-        self.entity_classifier = SpellEntityClassifier.load(self.config.entity_classifier_model_path)
+        self.entity_classifier = SpellEntityClassifier(self.config.processed_entity_label_data_path)
+        self.chat_context = ChatContext()
 
-    @staticmethod
-    def substitute_spell_data(response: str, entities: dict) -> str:
+    def substitute_spell_data(self, response: str) -> str:
         """Substitute entity placeholders found in the response with values from spell data"""
         # Find all placeholders in the response {key}
         placeholders = re.findall(r'\{(\w+)\}', response)
         
+        spell_name = self.chat_context.get_context("SPELL")
+
+        spell_data = self.chat_context.fetch_data(self.config.processed_spell_data_path, "name", spell_name.value)
+
         for key in placeholders:
-            if key in entities["spell_data"]:
-                value = entities["spell_data"][key]
+            if key in spell_data:
+                value = spell_data[key]
                 # Handle special cases
                 if key == "components":
                     value = ", ".join(value)
-                    material = entities["spell_data"].get("material", '')
+                    material = spell_data.get("material", '')
                     value += f" ({material})" if material else ''
                 elif isinstance(value, list):
                     value = ", ".join(value)
             elif key == "casting_time":
-                casting_time = entities["spell_data"].get("castingTime", "")
-                value = casting_time if casting_time else entities["spell_data"].get("actionType", "")
+                casting_time = spell_data.get("castingTime", "")
+                value = casting_time if casting_time else spell_data.get("actionType", "")
             else:
                 raise ValueError(f"Unknown placeholder '{key}' in response.")
 
@@ -43,7 +48,6 @@ class Chatbot(ChatbotInterface):
         return response
     
     def load(self):
-        print("Loading model...")
         intent_classifier = ModelData.load_model(self.config.model_path, self.config.model_data_path)
 
         self.assistant = Assistant(
@@ -51,7 +55,7 @@ class Chatbot(ChatbotInterface):
             self.config.exceptions_path
         )
 
-        self.vector_searcher = SpellSearcher(self.config.spells_db_path)
+        self.vector_searcher = SpellVectorSearcher(self.config.spells_db_path)
 
     def run(self):
         print("Welcome to the DnD Spell Chatbot!")
@@ -73,17 +77,31 @@ class Chatbot(ChatbotInterface):
             predicted_intent, response = self.assistant.process_message(message)
 
             # Extract spell entities if this intent requires NER
-            entities = self.entity_classifier.predict(message)
-            print("entities", entities)
-            # if entities["confidence"] < 65:
-            #     response = f"That spell does not exist in my grimoire. I'm limited to SRD data. If your spell is not in the SRD, I won't be able to help."
-            # elif entities["confidence"] < 80:
-            #     response = f"I couldn't find that spell in my grimoire. Did you mean {entities['spell_name']}?"
-            # else:
-            #     if predicted_intent:
-            #         response = self.substitute_spell_data(response, entities)
-            #     else:
-            #         response = self.vector_searcher.search(message, entities['spell_name'], 0.45, 0.5, 3)
+            predictions = self.entity_classifier.predict(message)
+            for prediction in predictions:
+                if prediction.confidence >= 80:
+                    if prediction.label != "LEVEL":
+                        self.chat_context.update_context(prediction)
+                    elif (prediction.confidence >= 90):
+                        self.chat_context.update_context(prediction)
+
+            # Determine if we're querying for a spell list
+            if predicted_intent == "spell_query":
+                pass
+            else:
+                spell = self.chat_context.get_context("SPELL")
+                if spell is None or spell.confidence < 80:
+                    if not predicted_intent:
+                        response = "I'm not sure what you mean. Could you please rephrase?"
+                    else:
+                        response = "I'm sorry, I can't find that spell in my grimoire. Could you try again?"
+                elif spell.confidence < 90:
+                    response = f"I couldn't find that spell in my grimoire. Did you mean {spell.value}?"
+                else:
+                    if not predicted_intent:
+                        response = self.vector_searcher.search(message, spell.value, rec_score=0.45, min_score=0.5, max_results=3)
+                    else:
+                        response = self.substitute_spell_data(response)
 
 
             print(response)

@@ -2,7 +2,7 @@ def insert_entry(conn, name):
     cursor = conn.execute('''
         INSERT INTO entries (name)
         VALUES (?)
-    ''', (name,)
+    ''', (name.lower(),)
     )
     return cursor.lastrowid
 

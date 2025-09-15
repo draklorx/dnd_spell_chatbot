@@ -57,3 +57,30 @@ Message: Is fireball a fire spell?, Predicted Tag: level, Confidence: 0.53372865
 Message: Is acid splash an acid spell?, Predicted Tag: level, Confidence: 0.5337286591529846
 Message: Is acidsplash an acid spell?, Predicted Tag: level, Confidence: 0.5337286591529846
 Message: quit, Predicted Tag: info, Confidence: 0.3971969783306122
+Message: 2nd levl, Predicted Tag: info, Confidence: 0.3971969783306122
+Message: What lvel is firbal?, Predicted Tag: info, Confidence: 0.40393325686454773
+Message: What is the damage for fire ball?, Predicted Tag: range, Confidence: 0.4475809931755066
+Message: What level is range?, Predicted Tag: level, Confidence: 0.5068258047103882
+Message: What lvel is bane?, Predicted Tag: info, Confidence: 0.40393325686454773
+Message: What is its damage?, Predicted Tag: info, Confidence: 0.3325395882129669
+Message: What is the damage for fireball?, Predicted Tag: range, Confidence: 0.4475809931755066
+Message: What is its damage?, Predicted Tag: info, Confidence: 0.3325395882129669
+Message: What is its damage?, Predicted Tag: info, Confidence: 0.3325395882129669
+Message: What is the damage for fireball?, Predicted Tag: range, Confidence: 0.4475809931755066
+Message: What is the damage for fireball?, Predicted Tag: range, Confidence: 0.4475809931755066
+Message: What is the damage for fireball?, Predicted Tag: range, Confidence: 0.4475809931755066
+Message: What is the damage of it?, Predicted Tag: range, Confidence: 0.5239062905311584
+Message: What is the damage for fireball?, Predicted Tag: duration, Confidence: 0.2458803951740265
+Message: What is the damage for fireball?, Predicted Tag: duration, Confidence: 0.2458803951740265
+Message: What is the damage for fireball?, Predicted Tag: duration, Confidence: 0.2458803951740265
+Message: What is the damage for fireball?, Predicted Tag: duration, Confidence: 0.2458803951740265
+Message: What is the damage for fireball?, Predicted Tag: duration, Confidence: 0.2458803951740265
+Message: What is the damage for fireball?, Predicted Tag: duration, Confidence: 0.2458803951740265
+Message: What is the damage for fireball?, Predicted Tag: duration, Confidence: 0.2458803951740265
+Message: What is the damage for fireball?, Predicted Tag: duration, Confidence: 0.2458803951740265
+Message: What is the damage for fireball?, Predicted Tag: duration, Confidence: 0.2458803951740265
+Message: What is the damage for fireball?, Predicted Tag: duration, Confidence: 0.2458803951740265
+Message: What is the damage for fireball?, Predicted Tag: duration, Confidence: 0.2458803951740265
+Message: What is its damage?, Predicted Tag: info, Confidence: 0.24092049896717072
+Message: How many darts does it shoot?, Predicted Tag: duration, Confidence: 0.4269463121891022
+Message: What is the damage for soifhsdf?, Predicted Tag: duration, Confidence: 0.2458803951740265

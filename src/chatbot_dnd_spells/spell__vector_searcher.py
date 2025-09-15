@@ -2,7 +2,7 @@ from embeddings import VectorSearcher
 import re
 from utils.colors import YELLOW, RESET
 
-class SpellSearcher(VectorSearcher):
+class SpellVectorSearcher(VectorSearcher):
     def __init__(self, db_path):
         """Initialize the spell searcher."""
         super().__init__(db_path)
@@ -57,62 +57,49 @@ class SpellSearcher(VectorSearcher):
         boosted_results = []
         failover_results = []
         for result in results:
-            text, order, similarity = result[:4]
-            keyword_boost = self._calculate_keyword_boost(query, text)
-            boosted_similarity = similarity + keyword_boost
+            keyword_boost = self._calculate_keyword_boost(query, result.chunk_context)
+            boosted_similarity = result.similarity_score + keyword_boost
 
-            boosted_result = list(result)
-            boosted_result[2] = boosted_similarity
+            result.similarity_score = boosted_similarity
 
             if boosted_similarity >= rec_score:
-                boosted_results.append(tuple(boosted_result))
+                boosted_results.append(result)
             elif boosted_similarity >= min_score:
-                failover_results.append(tuple(boosted_result))
+                failover_results.append(result)
 
         if len(boosted_results) == 0:
             # If no boosted results meet the threshold, use failover results
             boosted_results.extend(failover_results)
 
         # Re-sort and take top_k
-        boosted_results.sort(key=lambda x: x[2], reverse=True)
+        boosted_results.sort(key=lambda x: x.similarity_score, reverse=True)
 
         # clear duplicates
         seen = set()
         unique_results = []
         for result in boosted_results:
-            if result[0] not in seen:
-                seen.add(result[0])
+            if result.chunk_context not in seen:
+                seen.add(result.chunk_context)
                 unique_results.append(result)
 
         results = unique_results[:max_results]
 
-        # TODO Add debug mode
         if self.debug:
             print(f"{YELLOW}Debug: Search results for query for {spell_name}{RESET}")
             print(f"{YELLOW}Minimum score: {min_score} | Recommended score: {rec_score}{RESET}")
             # print results in score order
-            debug_sorted = sorted(results, key=lambda x: x[2], reverse=True)
-            for (text, order, score) in debug_sorted:
-                print(f"{YELLOW}score: {score:.3f} - {text}{RESET}")
+            debug_sorted = sorted(results, key=lambda x: x.similarity_score, reverse=True)
+            for result in debug_sorted:
+                print(f"{YELLOW}score: {result.similarity_score:.3f} - {result.chunk_context}{RESET}")
 
         if not results:
             return "No relevant information found."
         
-        # Get the relevant sentences and sort by order
-        relevant_sentences = []
-        for result in results:
-            if len(result) == 5:
-                text, order, score, name = result
-                relevant_sentences.append((text, order, score))
-            else:
-                text, order, score = result
-                relevant_sentences.append((text, order, score))
-        
         # Sort by source original sentence order
-        relevant_sentences.sort(key=lambda x: (x[1]))
+        results.sort(key=lambda x: (x.position))
         
         # Combine sentences
-        response_parts = [sentence[0] for sentence in relevant_sentences]
+        response_parts = [result.chunk_context for result in results]
         response = " ".join(response_parts)
 
         return f"According to {spell_name}: {response}"

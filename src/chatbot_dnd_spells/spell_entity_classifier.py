@@ -1,6 +1,6 @@
-from entity_recognition import EntityRuleClassifier
+from entity_recognition import SingleFuzzyClassifier
 
-class SpellEntityClassifier(EntityRuleClassifier):
+class SpellEntityClassifier(SingleFuzzyClassifier):
     def _extract_key_value(self, text, label):
         """Extract the key part from matched entities based on label type"""
         if label == "SAVING_THROW":

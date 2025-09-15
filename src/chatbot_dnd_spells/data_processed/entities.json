@@ -56,31 +56,6 @@
       ]
     },
     {
-      "label": "LEVEL",
-      "patterns": [
-        "1st level",
-        "2nd level",
-        "3rd level",
-        "4th level",
-        "5th level",
-        "6th level",
-        "7th level",
-        "8th level",
-        "9th level",
-        "cantrip",
-        "cantrips",
-        "level 1",
-        "level 2",
-        "level 3",
-        "level 4",
-        "level 5",
-        "level 6",
-        "level 7",
-        "level 8",
-        "level 9"
-      ]
-    },
-    {
       "label": "SPELL",
       "patterns": [
         "acid splash",
@@ -422,6 +397,31 @@
         "true resurrection",
         "weird",
         "wish"
+      ]
+    },
+    {
+      "label": "LEVEL",
+      "patterns": [
+        "cantrip",
+        "cantrips",
+        "1st level",
+        "level 1",
+        "2nd level",
+        "level 2",
+        "3rd level",
+        "level 3",
+        "4th level",
+        "level 4",
+        "5th level",
+        "level 5",
+        "6th level",
+        "level 6",
+        "7th level",
+        "level 7",
+        "8th level",
+        "level 8",
+        "9th level",
+        "level 9"
       ]
     }
   ]

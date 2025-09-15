@@ -1,108 +1,59 @@
 from spacy import Language
 import spacy
 import json
-from spaczz.pipeline import SpaczzRuler
-from .classifier_interface import ClassifierInterface
+from .data_classes import Prediction
+from .interfaces.classifier_interface import ClassifierInterface
 
+# This was an attempt to use spaCy's EntityRuler for rule-based entity recognition
+# TODO: This code is not thoroughly tested, and may not work with the latest interfaces
+# Uses spaCy's EntityRuler to create a rule-based entity recognition model
+# IMPORTANT: This only works for relatively small data sets with predictable patterns
+# This does not support fuzzy matching
+# For larger data sets or more complex patterns, consider using a more advanced recognition method
 class EntityRuleClassifier(ClassifierInterface):
     def __init__(self, nlp: Language):
         self.nlp = nlp
 
     @staticmethod
-    def train (entity_label_data_path):
-        """Take labeled data and create a spaczz ruler model (fuzzy patterns)."""
+    def build_model (entity_label_data_path):
+        """Build a spaCy NER model using the entity ruler component."""
         nlp = spacy.blank("en")
-
-        # 1) Exact matches first
-        exact = nlp.add_pipe("entity_ruler", config={"overwrite_ents": False})
-
-        # 2) Fuzzy fallback second
-        ruler = nlp.add_pipe("spaczz_ruler", config={"overwrite_ents": False})
-
-        with open(entity_label_data_path, "r", encoding="utf-8") as f:
+        # Add the entity ruler component using the string name
+        ruler = nlp.add_pipe("entity_ruler")
+        
+        with open(entity_label_data_path, "r") as f:
             data = json.load(f)
-            exact_patterns = EntityRuleClassifier.parse_exact_patterns(data)
-            fuzzy_patterns = EntityRuleClassifier.parse_fuzzy_patterns(data)
+            patterns = EntityRuleClassifier.parse_patterns(data)
 
-        exact.add_patterns(exact_patterns)
-        ruler.add_patterns(fuzzy_patterns)
-
-        print("exact patterns:", len(exact.patterns))
-        print("fuzzy patterns:", len(ruler.patterns))
+        ruler.add_patterns(patterns)  # Wrap in a list
+        
         return nlp
 
     @staticmethod
-    def parse_exact_patterns(data):
-        """Build exact phrase patterns so perfect matches win and block fuzzy overlaps."""
+    def parse_patterns(data):
         patterns = []
         for entity in data["entities"]:
             label = entity["label"]
-            for phrase in entity["patterns"]:
-                patterns.append({
-                    "label": label,
-                    "pattern": phrase,
-                    "id": phrase
-                })
+            for pattern in entity["patterns"]:
+                # Handle multi-word phrases
+                if " " in pattern:
+                    pattern_tokens = [{"LOWER": word} for word in pattern.split()]
+                else:
+                    pattern_tokens = [{"LOWER": pattern}]
+                patterns.append({"label": label, "pattern": pattern_tokens})
         return patterns
 
-    @staticmethod
-    def parse_fuzzy_patterns(data):
-        """
-        Build spaczz patterns.
-        - Multi-word phrases use token-level fuzzy to require each token to match.
-        - Single words use fuzzy phrase.
-        - Raise the minimum ratio to avoid spurious partial matches.
-        """
-        patterns = []
-        for entity in data["entities"]:
-            label = entity["label"]
-            for phrase in entity["patterns"]:
-                tokens = phrase.split()
-                if len(tokens) > 1:
-                    # Token-level fuzzy: each token must fuzzily match its counterpart.
-                    token_pattern = [{"LOWER": {"FUZZY": t}} for t in tokens]
-                    patterns.append({
-                        "label": label,
-                        "pattern": token_pattern,
-                        "type": "token",
-                        "id": phrase,
-                        "kwargs": {"min_r": 90}  # tighten threshold
-                    })
-                else:
-                    # Single-token fuzzy phrase
-                    patterns.append({
-                        "label": label,
-                        "pattern": phrase,
-                        "type": "fuzzy",
-                        "id": phrase,
-                        "kwargs": {"min_r": 90}
-                    })
-        return patterns
-    
     def _extract_key_value(self, text, label):
-        """Override in subclass to extract key part from matched entities based on label type"""
-        return text
+        """Extract the key part from matched entities based on label type"""
+        return text  # Default implementation, can be overridden in subclasses
 
     def predict(self, text):
         doc = self.nlp(text)
-        results = []
-        for ent in doc.ents:
-            ratio = getattr(ent._, "spaczz_ratio", None)
-            if ratio is None:
-                # From exact ruler (treat as perfect)
-                ratio = 1.0
-            matched_to = ent.ent_id_ or None  # set via pattern "id" above
-
-            # Optional: use the canonical match for key extraction
-            self._extract_key_value(matched_to or ent.text, ent.label_)
-
-            results.append({
-                "text": ent.text,
-                "label": ent.label_,
-                "confidence": ratio,
-                "matched_to": matched_to
-            })
-        return results
+        if doc is not None:
+            for ent in doc.ents:
+                parsed_value = self._extract_key_value(ent.text, ent.label_)
+                return [Prediction(ent.label_, parsed_value, 100)]
+        return []
 
     @classmethod
     def load(cls, entity_classifier_path: str):
