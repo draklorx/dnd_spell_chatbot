@@ -6,6 +6,8 @@ from intents.interfaces import ChatbotInterface
 from chatbot_dnd_spells.chatbot_config import ChatbotConfig
 from .spell__vector_searcher import SpellVectorSearcher
 from coreference_resolution import ChatContext
+from coreference_resolution.coreference_resolver import CoreferenceResolver
+from entity_recognition import Prediction
 import re
 
 class Chatbot(ChatbotInterface):
@@ -17,6 +19,7 @@ class Chatbot(ChatbotInterface):
         self.function_mappings = {}
         self.entity_classifier = SpellEntityClassifier(self.config.processed_entity_label_data_path)
         self.chat_context = ChatContext()
+        self.coreference_resolver = CoreferenceResolver(self.chat_context)
 
     def substitute_spell_data(self, response: str) -> str:
         """Substitute entity placeholders found in the response with values from spell data"""
@@ -47,6 +50,12 @@ class Chatbot(ChatbotInterface):
                 
         return response
     
+    def _extract_entities_from_response(self, response: str):
+        """Extract entities from bot responses to update context"""
+        # This could be expanded to extract entities from bot responses
+        # For now, we'll focus on user message processing
+        pass
+    
     def load(self):
         intent_classifier = ModelData.load_model(self.config.model_path, self.config.model_data_path)
 
@@ -74,19 +83,31 @@ class Chatbot(ChatbotInterface):
             if message == "/quit":
                 exit()
 
+            # First, resolve any coreferences in the message
+            resolved_entities = self.coreference_resolver.resolve_coreferences(message)
+            
+            # Update chat context with resolved entities
+            for entity_type, entity_value in resolved_entities.items():
+                # Create a prediction object for the resolved entity
+                resolved_prediction = Prediction(entity_type, entity_value, 95.0)  # High confidence for resolved entities
+                self.chat_context.update_context(resolved_prediction)
+
             predicted_intent, response = self.assistant.process_message(message)
 
-            # Extract spell entities if this intent requires NER
-            predictions = self.entity_classifier.predict(message)
-            for prediction in predictions:
-                if prediction.confidence >= 80:
-                    if prediction.label != "LEVEL":
-                        self.chat_context.update_context(prediction)
-                    elif (prediction.confidence >= 90):
-                        self.chat_context.update_context(prediction)
+            # Extract spell entities if this intent requires entity recognition (only if no coreferences were resolved)
+            if not resolved_entities:
+                self.chat_context.clear_contexts()
+                predictions = self.entity_classifier.predict(message)
+                for prediction in predictions:
+                    if prediction.confidence >= 80:
+                        if prediction.label != "LEVEL":
+                            self.chat_context.update_context(prediction)
+                        elif (prediction.confidence >= 90):
+                            self.chat_context.update_context(prediction)
 
             # Determine if we're querying for a spell list
             if predicted_intent == "spell_query":
+                # TODO implement spell list querying
                 pass
             else:
                 spell = self.chat_context.get_context("SPELL")
@@ -103,9 +124,11 @@ class Chatbot(ChatbotInterface):
                     else:
                         response = self.substitute_spell_data(response)
 
-
             print(response)
             print() # add a blank line for readability
+            
+            # Add conversation to chat history
+            self.chat_context.add_to_chat_history(message, response)
             
             # Handle function mappings
             if predicted_intent in self.function_mappings:

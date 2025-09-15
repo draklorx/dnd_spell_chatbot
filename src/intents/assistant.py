@@ -28,7 +28,7 @@ class Assistant:
         predicted_intent = self.model_data.intents[predicted_class_index]
 
         # Only respond if confidence is high enough
-        if confidence < 0.7:
+        if confidence < 0.8:
             self.write_exception(input_message, predicted_intent, confidence)
             return (None, "I'm not sure what you mean. Can you rephrase?")
 

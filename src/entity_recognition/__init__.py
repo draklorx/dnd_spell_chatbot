@@ -1,2 +1,3 @@
 from .entity_rule_classifier import EntityRuleClassifier
 from .single_fuzzy_classifier import SingleFuzzyClassifier
+from .data_classes import Prediction

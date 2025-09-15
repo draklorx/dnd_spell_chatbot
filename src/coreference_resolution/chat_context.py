@@ -14,6 +14,9 @@ class ChatContext:
     def get_context(self, label):
         return self.context.get(label, None)
 
+    def clear_contexts(self):
+        self.context = {}
+
     def add_to_chat_history(self, user_message, bot_response):
         self.chat_history.append(Message(user_message, Role.USER))
         self.chat_history.append(Message(bot_response, Role.BOT))
